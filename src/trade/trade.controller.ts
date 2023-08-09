@@ -60,7 +60,7 @@ export class TradeController implements OnModuleInit {
     );
 
     const response: API.TradeGetSearchResponse = {
-      results: paginatedResults.map<API.TradeSearchResult>((item) => ({
+      results: paginatedResults.map<API.TradeSearchResult>((item, index) => ({
         item: {
           // should be removed from item interface
           language: undefined,
@@ -94,7 +94,9 @@ export class TradeController implements OnModuleInit {
         },
         listing: {
           account: null,
-          expiresAt: null,
+          expiresAt: new Date(
+            Date.now() + 1000 * 60 * 60 * 24 - 1000 * 60 * 60 * index,
+          ),
           id: item.uuid,
         },
       })),
