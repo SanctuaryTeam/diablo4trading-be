@@ -22,7 +22,7 @@
     "generate-jwt-token": "node -e \"require('fs').writeFileSync('.env', require('fs').readFileSync('.env', 'utf8').replace(/JWT_SECRET=.*/, 'JWT_SECRET=' + Array.from({length: 8}, () => Math.random().toString(36).slice(2)).join('')), 'utf8')\""
   },
   "dependencies": {
-    "@diablosnaps/assets": "^0.2.5",
+    "@diablosnaps/assets": "^0.2.6",
     "@diablosnaps/common": "^0.2.5",
     "@faker-js/faker": "^8.0.2",
     "@nestjs/common": "^10.0.0",

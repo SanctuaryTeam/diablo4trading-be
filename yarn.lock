@@ -376,10 +376,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@diablosnaps/assets@^0.2.5":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@diablosnaps/assets/-/assets-0.2.5.tgz#a69852a67e79287201700a4cbdd32316eaa7ddaf"
-  integrity sha512-HOl9jPZVW1n7yUZdyY85x2KkuSTedx3FCx8Ef64YguM8C9yV0GhdCu/eXau6j2vwoIcd95xf374iWOJ8LDhkyQ==
+"@diablosnaps/assets@^0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@diablosnaps/assets/-/assets-0.2.6.tgz#2bd18241af9f664442c6af97955f04bea8d09e7c"
+  integrity sha512-pwSnDsWuelbButK2krZk/el8VR7J8FgoguKDoJqAYBTb6rxIugxrC32oTPYrttiYzASKj+Cd1ifwF3thNu9+Jg==
   dependencies:
     "@diablosnaps/common" "^0.2.5"
 
