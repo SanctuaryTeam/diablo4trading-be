@@ -2,7 +2,7 @@
 import { Game } from '@diablosnaps/common';
 import { Controller, Get, Query } from '@nestjs/common';
 import { SearchPayload } from '@sanctuaryteam/shared/cjs/api/search';
-import { DiabloItem } from 'src/diabloItems/diablo-item.entity';
+import { DiabloItem } from 'src/diablo-items/diablo-item.entity';
 
 export interface SearchRequest {
     payload: SearchPayload;

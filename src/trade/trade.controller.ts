@@ -2,9 +2,9 @@
 import { Game } from '@diablosnaps/common';
 import { Controller, Get, HttpException, OnModuleInit, Query } from '@nestjs/common';
 import { API } from '@sanctuaryteam/shared';
-import { DiabloItem } from 'src/diabloItems/diablo-item.interface';
-import { DiabloItemService } from 'src/diabloItems/diablo-item.service';
-import { generateMockDiabloItems } from '../diabloItems/diablo-item.mock';
+import { DiabloItem } from 'src/diablo-items/diablo-item.interface';
+import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
+import { generateMockDiabloItems } from '../diablo-items/diablo-item.mock';
 
 @Controller('trade')
 export class TradeController implements OnModuleInit {
