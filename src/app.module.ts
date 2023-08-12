@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -11,6 +12,7 @@ import { TradeModule } from './trade/trade.module';
 @Module({
     imports: [
         DatabaseModule,
+        ScheduleModule.forRoot(),
         AuthModule,
         DiabloItemModule,
         TradeModule,

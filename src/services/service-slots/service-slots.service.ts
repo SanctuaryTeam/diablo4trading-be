@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Repository, SelectQueryBuilder } from 'typeorm';
+import { Not, Repository, SelectQueryBuilder } from 'typeorm';
 import { ServiceResponseException } from '../../common/exceptions';
 import { SERVICE_SLOT_STATES, ServiceSlot } from './service-slots.entity';
 
@@ -16,7 +16,6 @@ export type ServiceSlotCreationData = Pick<ServiceSlot, 'serviceOwnerUserId' | '
 export class ServiceSlotsService {
     constructor(
         @InjectRepository(ServiceSlot) private readonly serviceSlotRepository: Repository<ServiceSlot>,
-        private readonly dataSource: DataSource,
     ) {
     }
 
@@ -72,7 +71,7 @@ export class ServiceSlotsService {
          maxAcceptedSlots limit. We use a transaction to prevent a potential race condition where multiple slots are simultaneously/rapidly
          accepted and the limit is exceeded.
          */
-        return await this.dataSource.transaction(async transactionalEntityManager => {
+        return await this.serviceSlotRepository.manager.transaction(async transactionalEntityManager => {
             const slotQueryBuilder = transactionalEntityManager.createQueryBuilder(ServiceSlot, 'service_slot');
 
             const slot = await slotQueryBuilder
