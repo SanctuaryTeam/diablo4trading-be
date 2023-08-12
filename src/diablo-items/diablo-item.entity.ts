@@ -1,7 +1,7 @@
 import { Game } from '@diablosnaps/common';
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { DiabloItemAffix } from './diablo-item-affix.entity';
 import { v4 as uuid } from 'uuid';
+import { DiabloItemAffix } from './diablo-item-affix.entity';
 
 @Entity({ name: 'diablo_item' })
 export class DiabloItem {
@@ -10,9 +10,9 @@ export class DiabloItem {
 
     @BeforeInsert()
     generateUuid() {
-      this.uuid = uuid();
+        this.uuid = uuid();
     }
-    
+
     @Column({ type: 'uuid', nullable: false, default: 'uuid_generate_v4()' })
     uuid: string;
 

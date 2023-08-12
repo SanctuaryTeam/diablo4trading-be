@@ -17,7 +17,7 @@ export class CreateDiabloItemTable1690990054725 implements MigrationInterface {
                         name: 'uuid',
                         type: 'varchar',
                         isNullable: false,
-                        length: '36'
+                        length: '36',
                     },
                     {
                         name: 'name',

@@ -33,4 +33,23 @@ import { DiabloItemAffix } from './diablo-items/diablo-item-affix.entity';
 })
 export class DatabaseModule {
     constructor() {}
+
+    static isUniqueConstraintViolation(error: any): boolean {
+        // Postgres unique violation code
+        if (error?.code === '23505') {
+            return true;
+        }
+
+        // MySQL/MariaDB unique entry error code
+        if (error?.code === 'ER_DUP_ENTRY') {
+            return true;
+        }
+
+        // SQLite unique constraint error message
+        if (error?.message && error.message.includes?.('UNIQUE constraint failed')) {
+            return true;
+        }
+
+        return false;
+    }
 }

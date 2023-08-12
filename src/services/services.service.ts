@@ -16,16 +16,13 @@ export enum SERVICE_ERROR_CODES {
 export class ServicesService {
     constructor(
         @InjectRepository(Service) private readonly serviceRepository: Repository<Service>,
-    ) {}
+    ) {
+    }
 
     createQuery() {
         return new CustomQueryBuilder(
             this.serviceRepository.createQueryBuilder('service'),
         );
-    }
-
-    async findById(id: number): Promise<Service> {
-        return this.serviceRepository.findOneBy({ id });
     }
 
     async countNotDeletedServices(): Promise<number> {
@@ -90,7 +87,12 @@ class CustomQueryBuilder {
         this.queryBuilder = queryBuilder;
     }
 
-    searchByTitle(title: string): CustomQueryBuilder {
+    searchById(id: number): CustomQueryBuilder {
+        this.queryBuilder = this.queryBuilder.andWhere('service.id = :id', { id });
+        return this;
+    }
+
+    searchByTitle(title?: string): CustomQueryBuilder {
         if (title) {
             this.queryBuilder = this.queryBuilder.andWhere(
                 'service.title LIKE :title',
@@ -110,14 +112,8 @@ class CustomQueryBuilder {
         return this;
     }
 
-    filterByAvailableSlots(minSlots?: number): CustomQueryBuilder {
-        if (typeof minSlots === 'number') {
-            this.queryBuilder = this.queryBuilder.andWhere(
-                'service.available_slots >= :minSlots',
-                { minSlots },
-            );
-        }
-
+    includeSlots(): CustomQueryBuilder {
+        this.queryBuilder = this.queryBuilder.leftJoinAndSelect('service.slots', 'service_slot');
         return this;
     }
 
@@ -141,5 +137,9 @@ class CustomQueryBuilder {
 
     getMany(): Promise<Service[]> {
         return this.queryBuilder.getMany();
+    }
+
+    getOne(): Promise<Service> {
+        return this.queryBuilder.getOne();
     }
 }

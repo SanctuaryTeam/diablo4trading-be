@@ -4,11 +4,13 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
 import { User } from '../users/users.entity';
+import { ServiceSlot } from './service-slots/service-slots.entity';
 
 @Entity({ name: 'service' })
 export class Service {
@@ -30,14 +32,17 @@ export class Service {
     @JoinColumn({ name: 'user_id' })
     user: User;
 
+    @Column({ type: 'int', name: 'user_id', nullable: false })
+    userId: number;
+
     @Column({ nullable: false, default: 1 })
     tags: number;
 
     @Column({ nullable: false, default: 3 })
-    maxSlots: number;
+    maxAcceptedSlots: number;
 
-    @Column({ nullable: false, default: 3 })
-    availableSlots: number;
+    @OneToMany(type => ServiceSlot, slot => slot.service)
+    slots: ServiceSlot[];
 
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     bumpedAt: Date;

@@ -13,6 +13,9 @@ import {
     Query,
 } from '@nestjs/common';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
+import { UsersService } from '../users/users.service';
+import { ServiceSlot } from './service-slots/service-slots.entity';
+import { ServiceSlotsService } from './service-slots/service-slots.service';
 import { Service } from './services.entity';
 import { SERVICE_ERROR_CODES, ServicesService } from './services.service';
 
@@ -20,8 +23,11 @@ const MAX_SERVICE_COUNT = 3;
 
 @Controller('services')
 export class ServicesController {
-    constructor(private readonly servicesService: ServicesService) {
-    }
+    constructor(
+        private readonly servicesService: ServicesService,
+        private readonly serviceSlotsService: ServiceSlotsService,
+        private readonly usersService: UsersService,
+    ) {}
 
     @Get('')
     async search(
@@ -29,13 +35,11 @@ export class ServicesController {
         @Query('tags', OptionalParseIntPipe) tags?: number,
         @Query('offset', OptionalParseIntPipe) offset?: number,
         @Query('limit', OptionalParseIntPipe) limit?: number,
-        @Query('availableSlots', OptionalParseIntPipe) availableSlots?: number,
     ): Promise<Service[]> {
         return await this.servicesService
             .createQuery()
             .searchByTitle(title)
             .searchByTags(tags)
-            .filterByAvailableSlots(availableSlots)
             .paginate(offset, limit)
             .orderBy('bumpedAt', 'DESC')
             .getMany();
@@ -57,24 +61,14 @@ export class ServicesController {
         @Param('id') id: number,
         @Body() updateDto: Partial<Service>,
     ): Promise<Service> {
-        const existingService = await this.servicesService.findById(id);
+        const existingService = await this.servicesService
+            .createQuery()
+            .includeSlots()
+            .searchById(id)
+            .getOne();
 
         if (!existingService) {
             throw new NotFoundException(`Service with ID ${id} not found`);
-        }
-
-        const updatedMaxSlots = typeof updateDto.maxSlots === 'number' ? updateDto.maxSlots : existingService.maxSlots;
-
-        const updatedAvailableSlots = typeof updateDto.availableSlots === 'number'
-            ? updateDto.availableSlots
-            : existingService.availableSlots;
-
-        if (updatedAvailableSlots > updatedMaxSlots) {
-            throw new BadRequestException('Available slots cannot exceed the max slots.');
-        }
-
-        if (updatedMaxSlots < updatedAvailableSlots) {
-            throw new BadRequestException('Max slots cannot be less than the available slots.');
         }
 
         try {
@@ -118,5 +112,36 @@ export class ServicesController {
                 );
             }
         }
+    }
+
+    @Post(':id/claim-slot/:userId')
+    async claimSlot(
+        @Param('id') id: number,
+        @Param('userId') userId: number,
+    ): Promise<ServiceSlot> {
+        const existingService = await this.servicesService
+            .createQuery()
+            .searchById(id)
+            .getOne();
+
+        if (!existingService) {
+            throw new NotFoundException(`Service with ID ${id} not found`);
+        }
+
+        // Check if the user with the provided userId exists
+        const user = await this.usersService.findById(userId);
+
+        if (!user) {
+            throw new NotFoundException(`User with ID ${userId} not found`);
+        }
+
+        // Creating a new ServiceSlot
+        const newSlotData = {
+            serviceId: existingService.id,
+            clientUserId: userId,
+            serviceOwnerUserId: existingService.userId,
+        };
+
+        return await this.serviceSlotsService.createServiceSlot(newSlotData);
     }
 }
