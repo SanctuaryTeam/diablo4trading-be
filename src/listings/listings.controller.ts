@@ -1,13 +1,13 @@
-// trade.controller.ts
+// listings.controller.ts
 import { Game } from '@diablosnaps/common';
-import { Controller, Get, HttpException, OnModuleInit, Query } from '@nestjs/common';
+import { Controller, Get, HttpException, OnModuleInit, Post, Query } from '@nestjs/common';
 import { API } from '@sanctuaryteam/shared';
 import { DiabloItem } from 'src/diablo-items/diablo-item.interface';
 import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
 import { generateMockDiabloItems } from '../diablo-items/diablo-item.mock';
 
-@Controller('trade')
-export class TradeController implements OnModuleInit {
+@Controller('listings')
+export class ListingsController implements OnModuleInit {
     private diabloItemsMock: DiabloItem[] = [];
 
     constructor(private diabloItemService: DiabloItemService) {}
@@ -15,6 +15,18 @@ export class TradeController implements OnModuleInit {
     async onModuleInit() {
         const diabloItemAffixes = await this.diabloItemService.getAffixes();
         this.diabloItemsMock = generateMockDiabloItems(500, diabloItemAffixes);
+    }
+
+    @Post('')
+    bid() {
+    }
+
+    @Post('')
+    buy() {
+    }
+
+    @Post('')
+    create() {
     }
 
     @Get('search')
@@ -40,8 +52,6 @@ export class TradeController implements OnModuleInit {
         if (isNaN(timestamp)) {
             timestamp = Date.now();
         }
-
-        console.info('search', serverType, page, pageSize, payload);
 
         // You can implement the actual search logic here based on the request
         // For now, we'll use mock data
