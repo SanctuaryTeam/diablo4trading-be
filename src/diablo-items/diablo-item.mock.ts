@@ -2,14 +2,14 @@
 import { Game } from '@diablosnaps/common';
 import { faker } from '@faker-js/faker';
 import { DiabloItemAffix } from './diablo-item-affix.interface';
-import { DiabloItem } from './diablo-item.interface';
+import { IDiabloItem } from './diablo-item.interface';
 
-// Function to generate random DiabloItem mock data
-export function generateMockDiabloItems(count: number, diabloItemAffixes: DiabloItemAffix[]): DiabloItem[] {
-    const mockItems: DiabloItem[] = [];
+// Function to generate random IDiabloItem mock data
+export function generateMockDiabloItems(count: number, diabloItemAffixes: DiabloItemAffix[]): IDiabloItem[] {
+    const mockItems: IDiabloItem[] = [];
 
     for (let i = 0; i < count; i++) {
-        const item: DiabloItem = {
+        const item: IDiabloItem = {
             id: i + 1,
             uuid: faker.string.uuid(),
             quality: faker.helpers.arrayElement([
@@ -39,6 +39,7 @@ export function generateMockDiabloItems(count: number, diabloItemAffixes: Diablo
             affix2Value: faker.number.int({ min: 1, max: 100 }), // Adjust as needed
             affix3: faker.helpers.arrayElement(diabloItemAffixes),
             affix3Value: faker.number.int({ min: 1, max: 100 }), // Adjust as needed
+            image: '',
             createdAt: faker.date.past(),
             deleted: false,
         };

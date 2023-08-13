@@ -91,6 +91,15 @@ export class DiabloItem {
     @Column({ type: 'decimal', precision: 6, scale: 2, nullable: true })
     affix3Value: number;
 
+    @Column({
+        type: 'blob',
+        transformer: {
+            to: (value: string) => Buffer.from(value),
+            from: (value: Buffer) => value.toString(),
+        },
+    })
+    image: string;
+
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 

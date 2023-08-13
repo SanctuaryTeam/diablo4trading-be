@@ -15,31 +15,38 @@ export class CreateItemListingTable1691959323431 implements MigrationInterface {
                     },
                     {
                         name: 'seller_id',
-                        type: 'uuid',
+                        type: 'integer',
+                        isNullable: false,
                     },
                     {
                         name: 'diablo_item_id',
-                        type: 'uuid',
+                        type: 'integer',
+                        isNullable: false,
                     },
                     {
                         name: 'reserve_price',
-                        type: 'decimal',
+                        type: 'integer',
+                        isNullable: true,
                     },
                     {
                         name: 'minimum_bid',
-                        type: 'decimal',
+                        type: 'integer',
+                        default: 0,
+                        isNullable: false,
                     },
                     {
                         name: 'duration',
-                        type: 'int',
+                        type: 'integer',
+                        isNullable: false,
                     },
                     {
                         name: 'buy_now_price',
-                        type: 'decimal',
+                        type: 'integer',
+                        isNullable: true,
                     },
                     {
                         name: 'current_bid_price',
-                        type: 'decimal',
+                        type: 'integer',
                         isNullable: true, // It can be nullable if no bid has been placed yet
                     },
                     {

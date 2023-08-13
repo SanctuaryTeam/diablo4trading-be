@@ -1,7 +1,7 @@
 import { Game } from '@diablosnaps/common';
 import { DiabloItemAffix } from './diablo-item-affix.interface';
 
-export interface DiabloItem {
+export interface IDiabloItem {
     id: number;
     uuid: string;
     quality: Game.ItemQuality | null;
@@ -27,6 +27,7 @@ export interface DiabloItem {
     affix2Value: number | null;
     affix3: DiabloItemAffix | null;
     affix3Value: number | null;
+    image: string | null;
     createdAt: Date;
     deleted: boolean;
 }

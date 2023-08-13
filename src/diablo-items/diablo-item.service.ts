@@ -1,8 +1,9 @@
 import { Assets } from '@diablosnaps/assets';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { DiabloItemAffix } from './diablo-item-affix.entity';
+import { DiabloItem } from './diablo-item.entity';
 
 @Injectable()
 export class DiabloItemService implements OnModuleInit {
@@ -10,7 +11,9 @@ export class DiabloItemService implements OnModuleInit {
         @InjectRepository(DiabloItemAffix, 'memory') private readonly diabloItemAffixRepository: Repository<
             DiabloItemAffix
         >,
-    ) {}
+        @InjectRepository(DiabloItem) private readonly diabloItemRepository: Repository<DiabloItem>,
+    ) {
+    }
 
     async onModuleInit() {
         await this.loadAffixes();
@@ -29,6 +32,11 @@ export class DiabloItemService implements OnModuleInit {
             affix.name = name;
             await diabloItemAffixRepository.save(affix);
         }
+    }
+
+    async createDiabloItem(entityManager: EntityManager, data: Partial<DiabloItem>): Promise<DiabloItem> {
+        const item = entityManager.create(DiabloItem, data);
+        return await entityManager.save(item) as DiabloItem;
     }
 
     async getAffixes() {

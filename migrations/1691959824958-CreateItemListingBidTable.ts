@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
 export class CreateItemListingBidTable1691959824958 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
@@ -19,7 +19,7 @@ export class CreateItemListingBidTable1691959824958 implements MigrationInterfac
                     },
                     {
                         name: 'item_listing_id',
-                        type: 'int',
+                        type: 'uuid',
                     },
                     {
                         name: 'bid_amount',

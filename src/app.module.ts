@@ -7,7 +7,7 @@ import { DatabaseModule } from './database.module';
 import { DiabloItemModule } from './diablo-items/diablo-item.module';
 import { ServiceSlotsModule } from './services/service-slots/service-slots.module';
 import { ServicesModule } from './services/services.module';
-import { TradeModule } from './trade/trade.module';
+import { ListingsModule } from './listings/listings.module';
 
 @Module({
     imports: [
@@ -15,7 +15,7 @@ import { TradeModule } from './trade/trade.module';
         ScheduleModule.forRoot(),
         AuthModule,
         DiabloItemModule,
-        TradeModule,
+        ListingsModule,
         ServicesModule,
         ServiceSlotsModule,
     ],

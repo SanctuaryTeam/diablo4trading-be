@@ -1,16 +1,21 @@
-// listings.controller.ts
 import { Game } from '@diablosnaps/common';
-import { Controller, Get, HttpException, OnModuleInit, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, OnModuleInit, Post, Query } from '@nestjs/common';
 import { API } from '@sanctuaryteam/shared';
-import { DiabloItem } from 'src/diablo-items/diablo-item.interface';
+import { IDiabloItem } from 'src/diablo-items/diablo-item.interface';
 import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
 import { generateMockDiabloItems } from '../diablo-items/diablo-item.mock';
+import { ItemListing } from './listings.entity';
+import { ListingsService, TradePostCreateData } from './listings.service';
 
 @Controller('listings')
 export class ListingsController implements OnModuleInit {
-    private diabloItemsMock: DiabloItem[] = [];
+    private diabloItemsMock: IDiabloItem[] = [];
 
-    constructor(private diabloItemService: DiabloItemService) {}
+    constructor(
+        private diabloItemService: DiabloItemService,
+        private readonly listingsService: ListingsService,
+    ) {
+    }
 
     async onModuleInit() {
         const diabloItemAffixes = await this.diabloItemService.getAffixes();
@@ -26,7 +31,8 @@ export class ListingsController implements OnModuleInit {
     }
 
     @Post('')
-    create() {
+    async create(@Body() body: TradePostCreateData): Promise<ItemListing> {
+        return await this.listingsService.createItemAndListing(body);
     }
 
     @Get('search')
@@ -58,7 +64,7 @@ export class ListingsController implements OnModuleInit {
         const startIndex = (page - 1) * pageSize;
         const endIndex = startIndex + pageSize;
         console.log(startIndex, endIndex);
-        const paginatedResults: DiabloItem[] = this.diabloItemsMock.slice(
+        const paginatedResults: IDiabloItem[] = this.diabloItemsMock.slice(
             startIndex,
             endIndex,
         );
