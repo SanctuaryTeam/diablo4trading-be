@@ -8,14 +8,14 @@ export class CreateItemListingBidTable1691959824958 implements MigrationInterfac
                 columns: [
                     {
                         name: 'id',
-                        type: 'int',
+                        type: 'integer',
                         isPrimary: true,
                         isGenerated: true,
                         generationStrategy: 'increment',
                     },
                     {
                         name: 'user_id',
-                        type: 'int',
+                        type: 'integer',
                     },
                     {
                         name: 'item_listing_id',
@@ -23,7 +23,7 @@ export class CreateItemListingBidTable1691959824958 implements MigrationInterfac
                     },
                     {
                         name: 'bid_amount',
-                        type: 'int',
+                        type: 'integer',
                     },
                     {
                         name: 'created_at',

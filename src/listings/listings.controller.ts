@@ -36,7 +36,7 @@ export class ListingsController implements OnModuleInit {
     }
 
     @Get('search')
-    search(@Query() query: API.TradeGetSearchQuery): API.TradeGetSearchResponse {
+    async search(@Query() query: API.TradeGetSearchQuery): Promise<API.TradeGetSearchResponse> {
         const { serverType } = query;
         if (!Game.ServerType[serverType]) {
             throw new HttpException('Invalid serverType', 400);
@@ -63,7 +63,7 @@ export class ListingsController implements OnModuleInit {
         // For now, we'll use mock data
         const startIndex = (page - 1) * pageSize;
         const endIndex = startIndex + pageSize;
-        console.log(startIndex, endIndex);
+
         const paginatedResults: IDiabloItem[] = this.diabloItemsMock.slice(
             startIndex,
             endIndex,
