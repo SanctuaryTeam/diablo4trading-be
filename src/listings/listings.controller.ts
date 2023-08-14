@@ -4,7 +4,7 @@ import { API } from '@sanctuaryteam/shared';
 import { IDiabloItem } from 'src/diablo-items/diablo-item.interface';
 import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
 import { generateMockDiabloItems } from '../diablo-items/diablo-item.mock';
-import { ItemListing } from './listings.entity';
+import { ItemListing } from './item-listing.entity';
 import { ListingsService, TradePostCreateData } from './listings.service';
 
 @Controller('listings')

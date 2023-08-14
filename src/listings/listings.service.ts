@@ -4,7 +4,7 @@ import { omit } from 'lodash';
 import { Repository } from 'typeorm';
 import { DiabloItem } from '../diablo-items/diablo-item.entity';
 import { DiabloItemService } from '../diablo-items/diablo-item.service';
-import { ItemListing } from './listings.entity';
+import { ItemListing } from './item-listing.entity';
 
 // TODO - move into sanctuaryteam/shared
 export interface TradePostCreateData {
