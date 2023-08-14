@@ -61,10 +61,13 @@ class DiabloItemQueryBuilder {
         affixConditions: { id: number; value: number }[],
         requiredAffixAmount: number,
     ): DiabloItemQueryBuilder {
-        const parameters = affixConditions.reduce<{ [key: string]: any }>(
-            (obj, affix, index) => ({ ...obj, [`affixId${index}`]: affix.id, [`affixValue${index}`]: affix.value }),
-            {},
-        );
+        const parameters = {
+            ...affixConditions.reduce<{ [key: string]: any }>(
+                (obj, affix, index) => ({ ...obj, [`affixId${index}`]: affix.id, [`affixValue${index}`]: affix.value }),
+                {},
+            ),
+            requiredAffixAmount,
+        };
         const queryAffixCase = (affixIndex: number) =>
             `CASE WHEN (` + Array.from({ length: 6 }, (_, index) => {
                 const affixIdKey = `${index < 2 ? 'inherent_a' : 'a'}ffix${index < 2 ? index : index - 2}_id`;
@@ -74,9 +77,7 @@ class DiabloItemQueryBuilder {
             }).join(' OR ') + `) THEN 1 ELSE 0 END`;
         const conditionsQuery = affixConditions.map((_, index) => queryAffixCase(index)).join(' + ');
         this.queryBuilder = this.queryBuilder.setParameters(parameters);
-        this.queryBuilder = this.queryBuilder.where(`${conditionsQuery} >= :requiredAffixAmount`, {
-            requiredAffixAmount,
-        });
+        this.queryBuilder = this.queryBuilder.where(`${conditionsQuery} >= :requiredAffixAmount`);
         return this;
     }
 
