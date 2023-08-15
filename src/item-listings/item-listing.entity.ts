@@ -11,6 +11,12 @@ import {
 import { DiabloItem } from '../diablo-items/diablo-item.entity';
 import { User } from '../users/users.entity';
 
+export enum ItemListingState {
+    ACTIVE = 'ACTIVE',
+    SOLD = 'SOLD',
+    CLOSED = 'CLOSED',
+}
+
 @Entity('item_listing')
 export class ItemListing {
     @PrimaryGeneratedColumn('uuid')
@@ -34,7 +40,10 @@ export class ItemListing {
     reservePrice: number;
 
     @Column({ type: 'integer', nullable: false, default: 0 })
-    minimumBid: number;
+    openingBid: number;
+
+    @Column({ type: 'integer', nullable: true, default: 0 })
+    bidIncrement: number;
 
     @Column({ type: 'integer', nullable: false })
     duration: number;
@@ -45,8 +54,11 @@ export class ItemListing {
     @Column({ type: 'integer', nullable: true })
     currentBidPrice: number;
 
+    @Column({ type: 'varchar', nullable: false, default: 'ACTIVE' })
+    state: ItemListingState;
+
     @CreateDateColumn()
-    createAt: Date;
+    createdAt: Date;
 
     @UpdateDateColumn()
     updatedAt: Date;

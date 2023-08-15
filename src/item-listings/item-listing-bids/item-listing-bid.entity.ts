@@ -9,12 +9,12 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { ItemListing } from './item-listing.entity';
+import { ItemListing } from '../item-listing.entity';
 
 @Entity('item_listing_bid')
 export class ItemListingBid {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Column({ type: 'integer', name: 'user_id', nullable: false })
     userId: number;
@@ -23,8 +23,8 @@ export class ItemListingBid {
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @Column({ type: 'integer', name: 'item_listing_id', nullable: false })
-    itemListingId: number;
+    @Column({ type: 'uuid', name: 'item_listing_id', nullable: false })
+    itemListingId: string;
 
     @OneToOne(() => ItemListing)
     @JoinColumn({ name: 'item_listing_id' })
@@ -34,7 +34,7 @@ export class ItemListingBid {
     bidAmount: number;
 
     @CreateDateColumn()
-    createAt: Date;
+    createdAt: Date;
 
     @UpdateDateColumn()
     updatedAt: Date;

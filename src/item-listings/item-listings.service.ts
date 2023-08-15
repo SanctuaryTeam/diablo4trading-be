@@ -19,7 +19,7 @@ export interface TradePostCreateData {
 }
 
 @Injectable()
-export class ListingsService {
+export class ItemListingsService {
     constructor(
         @InjectRepository(ItemListing) private readonly listingRepository: Repository<ItemListing>,
         private diabloItemService: DiabloItemService,
@@ -29,18 +29,18 @@ export class ListingsService {
     async createItemAndListing(data: TradePostCreateData) {
         const manager = this.listingRepository.manager;
 
-        return await manager.transaction(async manager => {
+        return await manager.transaction(async transactionalManager => {
             // Make item first so we can get the ID
-            const { id: diabloItemId } = await this.diabloItemService.createDiabloItem(manager, {
+            const { id: diabloItemId } = await this.diabloItemService.createDiabloItem(transactionalManager, {
                 ...data.item,
                 image: data.picture,
             });
-            const listing = manager.create(ItemListing, {
+            const listing = transactionalManager.create(ItemListing, {
                 ...omit(data, ['item', 'picture']),
                 diabloItemId,
             });
 
-            return await manager.save(listing);
+            return await transactionalManager.save(listing);
         });
     }
 }
