@@ -12,14 +12,25 @@ const MAX_DEADLOCK_RETRIES = 10;
 const DATABASE_TYPE = process.env.DATABASE_TYPE;
 
 export enum BID_ERROR_CODES {
-    ITEM_LISTING_NOT_FOUND  = 'ITEM_LISTING_NOT_FOUND',
-    INVALID_BID_AMOUNT      = 'INVALID_BID_AMOUNT',
-    ITEM_LISTING_NOT_ACTIVE = 'ITEM_LISTING_NOT_ACTIVE',
+    LISTING_NOT_FOUND   = 'LISTING_NOT_FOUND',
+    INVALID_BID_OPENING = 'INVALID_BID_OPENING',
+    INVALID_BID_BUY     = 'INVALID_BID_BUY',
+    INVALID_BID_CURRENT = 'INVALID_BID_CURRENT',
+    LISTING_INACTIVE    = 'LISTING_INACTIVE',
 }
+
+const BID_ERROR_MESSAGES = {
+    LISTING_NOT_FOUND  : 'Item listing not found.',
+    LISTING_INACTIVE   : 'Item listing is not actively in auction.',
+    INVALID_BID_OPENING: ( openingBid: number, bidIncrement: number ) => `Bid amount is less than the listing's opening bid (${openingBid}) + minimum bid increment (${bidIncrement}).`,
+    INVALID_BID_BUY    : 'Buyout amount must be greater than the listing\'s buy now price.',
+    INVALID_BID_CURRENT: ( currentBidPrice: number, bidIncrement: number ) => `Bid amount must be greater than the current bid price (${currentBidPrice}) + minimum bid increment (${bidIncrement}).`,
+    TRANSACTION        : 'Transaction failed after multiple retries due to deadlocks.',
+};
 
 @Injectable ()
 export class ItemListingBidsService {
-    private readonly logger = new Logger(ItemListingBidsService.name);
+    private readonly logger = new Logger ( ItemListingBidsService.name );
 
     constructor (
         @InjectRepository ( ItemListingBid ) private readonly itemListingBidsRepository: Repository<ItemListingBid>
@@ -43,38 +54,41 @@ export class ItemListingBidsService {
             }
         }
 
-        throw new InternalServerErrorException ( 'Transaction failed after multiple retries due to deadlocks.' );
+        throw new InternalServerErrorException ( BID_ERROR_MESSAGES.TRANSACTION );
     }
 
     /* openingBid - the amount the seller wants to start the auction at
      * currentBidPrice - the current highest bid
      * bidIncrement - the amount the next bid must be greater than the current bid
      */
-    private async createBidTransaction ( data: BidCreationData ) {
+    private async createBidTransaction ( { type, bidAmount, userId, itemListingId }: BidCreationData ) {
         const manager = this.itemListingBidsRepository.manager;
 
         return await manager.transaction ( async ( transactionalManager: EntityManager ) => {
             const itemListing = await transactionalManager.findOne ( ItemListing, {
-                where: { id: data.itemListingId },
-                // Lock reads and writes to this row until the transaction is complete to prevent bid race conditions
-                ...( DATABASE_TYPE !== 'sqlite' ? { lock: { mode: 'pessimistic_write' } } : {} ),
+                where: { id: itemListingId },
+                ...( DATABASE_TYPE !== 'sqlite'
+                    ? { lock: { mode: 'pessimistic_write' } }
+                    : {} ),
             } );
 
             if ( !itemListing ) {
-                throw new ServiceResponseException ( BID_ERROR_CODES.ITEM_LISTING_NOT_FOUND, 'Item listing not found.' );
+                throw new ServiceResponseException ( BID_ERROR_CODES.LISTING_NOT_FOUND, BID_ERROR_MESSAGES.LISTING_NOT_FOUND );
             }
+
+            const { buyNowPrice, currentBidPrice, openingBid } = itemListing;
+            const bidIncrement = itemListing.bidIncrement || 0;
 
             if ( itemListing.state !== ItemListingState.ACTIVE ) {
-                throw new ServiceResponseException ( BID_ERROR_CODES.ITEM_LISTING_NOT_ACTIVE, 'Item listing is not actively in auction.' );
+                throw new ServiceResponseException ( BID_ERROR_CODES.LISTING_INACTIVE, BID_ERROR_MESSAGES.LISTING_INACTIVE );
             }
 
-            const bidIncrement = itemListing.bidIncrement || 0;
             let validBid = false;
 
             // Buyouts
-            if ( data.type === 'buyout' && itemListing.buyNowPrice ) {
-                if ( data.bidAmount < itemListing.buyNowPrice ) {
-                    throw new ServiceResponseException ( BID_ERROR_CODES.INVALID_BID_AMOUNT, 'Buyout amount must be greater than the listing\'s buy now price.' );
+            if ( type === 'buyout' && buyNowPrice ) {
+                if ( bidAmount < buyNowPrice ) {
+                    throw new ServiceResponseException ( BID_ERROR_CODES.INVALID_BID_BUY, BID_ERROR_MESSAGES.INVALID_BID_BUY );
                 }
 
                 itemListing.state = ItemListingState.SOLD;
@@ -82,21 +96,21 @@ export class ItemListingBidsService {
             }
 
             // Bids
-            if ( !validBid && itemListing.currentBidPrice ) {
-                if ( data.bidAmount <= ( itemListing.currentBidPrice + bidIncrement ) ) {
-                    throw new ServiceResponseException ( BID_ERROR_CODES.INVALID_BID_AMOUNT, `Bid amount must be greater than the current bid price (${itemListing.currentBidPrice}) + minimum bid increment (${itemListing.bidIncrement}).` );
+            if ( !validBid && currentBidPrice ) {
+                if ( bidAmount <= currentBidPrice + bidIncrement ) {
+                    throw new ServiceResponseException ( BID_ERROR_CODES.INVALID_BID_CURRENT, BID_ERROR_MESSAGES.INVALID_BID_CURRENT ( currentBidPrice, bidIncrement ) );
                 }
-            } else if ( !validBid && data.bidAmount < ( itemListing.openingBid + bidIncrement ) ) {
-                throw new ServiceResponseException ( BID_ERROR_CODES.INVALID_BID_AMOUNT, `Bid amount is less than the listing's opening bid (${itemListing.openingBid}) + minimum bid increment (${itemListing.bidIncrement}).` );
+            } else if ( !validBid && bidAmount < openingBid + bidIncrement ) {
+                throw new ServiceResponseException ( BID_ERROR_CODES.INVALID_BID_OPENING, BID_ERROR_MESSAGES.INVALID_BID_OPENING ( openingBid, bidIncrement ) );
             }
 
-            itemListing.currentBidPrice = data.bidAmount;
+            itemListing.currentBidPrice = bidAmount;
             await transactionalManager.save ( ItemListing, itemListing );
 
             const bid = transactionalManager.create ( ItemListingBid, {
-                userId       : data.userId,
-                itemListingId: data.itemListingId,
-                bidAmount    : data.bidAmount,
+                userId,
+                itemListingId,
+                bidAmount,
             } );
 
             return await transactionalManager.save ( ItemListingBid, bid );
