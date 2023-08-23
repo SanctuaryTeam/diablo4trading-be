@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,6 +8,7 @@ import { DiabloItemModule } from './diablo-items/diablo-item.module';
 import { ItemListingsModule } from './item-listings/item-listings.module';
 import { ServiceSlotsModule } from './services/service-slots/service-slots.module';
 import { ServicesModule } from './services/services.module';
+import { LoggingMiddleware } from './middleware/request-logging.middleware';
 
 @Module({
     imports: [
@@ -22,4 +23,8 @@ import { ServicesModule } from './services/services.module';
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(LoggingMiddleware).forRoutes('*');  // Apply for all routes
+    }
+}

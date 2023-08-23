@@ -33,6 +33,7 @@ export class ServicesController {
     async search(
         @Query('title') title?: string,
         @Query('tags', OptionalParseIntPipe) tags?: number,
+        @Query('deleted') deleted?: string,
         @Query('offset', OptionalParseIntPipe) offset?: number,
         @Query('limit', OptionalParseIntPipe) limit?: number,
     ): Promise<Service[]> {
@@ -40,6 +41,7 @@ export class ServicesController {
             .createQuery()
             .searchByTitle(title)
             .searchByTags(tags)
+            .searchByDeleted(deleted === 'true')
             .paginate(offset, limit)
             .orderBy('bumpedAt', 'DESC')
             .getMany();

@@ -1,5 +1,5 @@
 import { Game } from '@diablosnaps/common';
-import { BadRequestException, Body, Controller, Get, HttpException, InternalServerErrorException, OnModuleInit, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpException, InternalServerErrorException, OnModuleInit, Post, Query, UseGuards } from '@nestjs/common';
 import { API } from '@sanctuaryteam/shared';
 import { IDiabloItem } from 'src/diablo-items/diablo-item.interface';
 import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
@@ -8,6 +8,7 @@ import { ItemListing } from './item-listing.entity';
 import { ItemListingsService, TradePostCreateData } from './item-listings.service';
 import { BID_ERROR_CODES, BidCreationData, ItemListingBidsService } from './item-listing-bids/item-listing-bid.service';
 import { ItemListingBid } from './item-listing-bids/item-listing-bid.entity';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 
 @Controller ( 'listings' )
 export class ItemListingsController implements OnModuleInit {
@@ -31,6 +32,7 @@ export class ItemListingsController implements OnModuleInit {
     }
 
     @Get ( 'search' )
+    @UseGuards(JwtAuthGuard)
     async search ( @Query () query: API.TradeGetSearchQuery ): Promise<API.TradeGetSearchResponse> {
         const { serverType } = query;
         if ( !Game.ServerType[ serverType ] ) {
@@ -41,7 +43,7 @@ export class ItemListingsController implements OnModuleInit {
 
         let page = +query.page;
         if ( isNaN ( page ) ) {
-            page = 1;
+            page = 0;
         }
 
         let pageSize = +query.pageSize;

@@ -142,4 +142,11 @@ class CustomQueryBuilder {
     getOne(): Promise<Service> {
         return this.queryBuilder.getOne();
     }
+
+    searchByDeleted(deleted?: boolean): CustomQueryBuilder {
+        this.queryBuilder = this.queryBuilder.andWhere(
+            `service.deleted = :deleted`,
+            { deleted },
+        );        return this;
+    }
 }
