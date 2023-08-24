@@ -8,7 +8,7 @@ export class CreateServiceTable1691540281384 implements MigrationInterface {
                 columns: [
                     {
                         name: 'id',
-                        type: 'integer',
+                        type: 'int',
                         isPrimary: true,
                         isGenerated: true,
                         generationStrategy: 'increment',
@@ -33,24 +33,24 @@ export class CreateServiceTable1691540281384 implements MigrationInterface {
                     },
                     {
                         name: 'user_id',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: false,
                     },
                     {
                         name: 'max_slots',
-                        type: 'integer',
+                        type: 'int',
                         default: 3,
                         isNullable: false,
                     },
                     {
                         name: 'available_slots',
                         default: 3,
-                        type: 'integer',
+                        type: 'int',
                         isNullable: false,
                     },
                     {
                         name: 'tags',
-                        type: 'integer',
+                        type: 'int',
                         default: 1,
                         isNullable: false,
                     },
@@ -72,7 +72,7 @@ export class CreateServiceTable1691540281384 implements MigrationInterface {
                     },
                     {
                         name: 'updated_by',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: true,
                     },
                     {

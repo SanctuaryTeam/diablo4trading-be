@@ -1,6 +1,15 @@
 version: '3'
 
 services:
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=diablo
+      - MYSQL_ROOT_PASSWORD=diablo
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
   backend-api:
     # Use the image built from the Dockerfile in the current directory
     image: node:latest
@@ -21,3 +30,8 @@ services:
       - |
         yarn install
         yarn start:dev
+    links:
+      - db
+volumes:
+  db:
+    driver: local

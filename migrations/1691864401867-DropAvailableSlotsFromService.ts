@@ -11,7 +11,7 @@ export class DropAvailableSlotsFromService1691864401867 implements MigrationInte
             new TableColumn({
                 name: 'available_slots',
                 default: 3,
-                type: 'integer',
+                type: 'int',
                 isNullable: false,
             }),
         );

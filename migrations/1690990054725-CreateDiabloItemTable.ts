@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableColumnOptions } from 'typeorm';
+import {MigrationInterface, QueryRunner, Table, TableColumnOptions} from 'typeorm';
 
 export class CreateDiabloItemTable1690990054725 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
@@ -8,7 +8,7 @@ export class CreateDiabloItemTable1690990054725 implements MigrationInterface {
                 columns: [
                     {
                         name: 'id',
-                        type: 'integer',
+                        type: 'int',
                         isPrimary: true,
                         isGenerated: true,
                         generationStrategy: 'increment',
@@ -26,7 +26,7 @@ export class CreateDiabloItemTable1690990054725 implements MigrationInterface {
                     },
                     {
                         name: 'power',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: true,
                     },
                     {
@@ -41,17 +41,17 @@ export class CreateDiabloItemTable1690990054725 implements MigrationInterface {
                     },
                     {
                         name: 'dps',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: true,
                     },
                     {
                         name: 'armor',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: true,
                     },
                     {
                         name: 'socket_count',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: true,
                     },
                     {
@@ -61,7 +61,7 @@ export class CreateDiabloItemTable1690990054725 implements MigrationInterface {
                     },
                     {
                         name: 'required_level',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: true,
                     },
                     {
@@ -78,7 +78,7 @@ export class CreateDiabloItemTable1690990054725 implements MigrationInterface {
                         const columns: TableColumnOptions[] = [
                             {
                                 name: affixIdKey,
-                                type: 'integer',
+                                type: 'int',
                                 isNullable: true,
                             },
                             {

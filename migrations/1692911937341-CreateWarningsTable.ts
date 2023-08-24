@@ -1,10 +1,11 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import {MigrationInterface, QueryRunner, Table} from "typeorm"
 
-export class CreateUserTable1690411047852 implements MigrationInterface {
+export class CreateWarningsTable1692911937341 implements MigrationInterface {
+
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'user',
+                name: 'warnings',
                 columns: [
                     {
                         name: 'id',
@@ -14,35 +15,19 @@ export class CreateUserTable1690411047852 implements MigrationInterface {
                         generationStrategy: 'increment',
                     },
                     {
-                        name: 'discord_name',
-                        type: 'varchar',
-                        isNullable: false,
-                    },
-                    {
-                        name: 'discord_id',
-                        type: 'varchar',
-                        isNullable: false,
-                    },
-                    {
-                        name: 'battle_net_tag',
-                        type: 'varchar',
-                        isNullable: false,
-                    },
-                    {
-                        name: 'email',
-                        type: 'varchar',
-                        isNullable: false,
-                    },
-                    {
-                        name: 'role',
+                        name: 'user_id',
                         type: 'int',
                         isNullable: false,
-                        default: 0
                     },
                     {
-                        name: 'banned_until',
-                        type: 'datetime',
-                        isNullable: true,
+                        name: 'reason',
+                        type: 'int',
+                        isNullable: false,
+                    },
+                    {
+                        name: 'note',
+                        type: 'text',
+                        isNullable: false,
                     },
                     {
                         name: 'created_at',
@@ -57,6 +42,7 @@ export class CreateUserTable1690411047852 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('user');
+        await queryRunner.dropTable('warnings');
     }
+
 }

@@ -8,7 +8,7 @@ export class CreateServiceSlotTable1691864422139 implements MigrationInterface {
                 columns: [
                     {
                         name: 'id',
-                        type: 'integer',
+                        type: 'int',
                         isPrimary: true,
                         isGenerated: true,
                         generationStrategy: 'increment',
@@ -21,17 +21,17 @@ export class CreateServiceSlotTable1691864422139 implements MigrationInterface {
                     },
                     {
                         name: 'service_id',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: false,
                     },
                     {
                         name: 'service_owner_user_id',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: false,
                     },
                     {
                         name: 'client_user_id',
-                        type: 'integer',
+                        type: 'int',
                         isNullable: false,
                     },
                     {
