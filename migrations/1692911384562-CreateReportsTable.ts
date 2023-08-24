@@ -1,11 +1,11 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm"
+import {MigrationInterface, QueryRunner, Table} from 'typeorm'
 
 export class CreateReportsTable1692911384562 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'reports',
+                name: 'report',
                 columns: [
                     {
                         name: 'id',
@@ -38,13 +38,13 @@ export class CreateReportsTable1692911384562 implements MigrationInterface {
                         name: 'action_taken',
                         type: 'int',
                         isNullable: false,
-                        default: 0
+                        default: 0,
                     },
                     {
                         name: 'created_at',
                         type: 'datetime',
                         isNullable: false,
-                        default: 'CURRENT_TIMESTAMP'
+                        default: 'CURRENT_TIMESTAMP',
                     },
                     // Add other columns as needed.
                 ],
@@ -53,7 +53,7 @@ export class CreateReportsTable1692911384562 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('reports');
+        await queryRunner.dropTable('report');
     }
 
 }

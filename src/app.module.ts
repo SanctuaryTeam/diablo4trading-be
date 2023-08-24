@@ -5,7 +5,7 @@ import {AuthModule} from './auth/auth.module';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {typeOrmConfig} from './config/database.config';
 import {ConfigModule, ConfigService} from '@nestjs/config';
-import {ReportingModule} from "./reporting/reporting.module";
+import {ReportsModule} from "./reports/reports.module";
 
 @Module({
     imports: [
@@ -19,7 +19,7 @@ import {ReportingModule} from "./reporting/reporting.module";
             }
         }),
         ConfigModule.forRoot(),
-        ReportingModule],
+        ReportsModule],
     controllers: [AppController],
     providers: [AppService],
 })

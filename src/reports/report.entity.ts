@@ -6,15 +6,21 @@ export class Report {
   id: number;
 
   @Column()
-  discordName: string;
+  ReportingUserId: number;
 
   @Column()
-  battleNetTag: string;
+  ReportedEntityType: number;
 
   @Column()
-  username: string;
+  ReportedEntityId: number;
 
   @Column()
-  email: string;
+  Note: string;
+
+  @Column()
+  ActionTaken: number;
+
+  @Column()
+  CreatedAt: string;
   // Add other columns or properties as needed.
 }
