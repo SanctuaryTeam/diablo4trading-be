@@ -38,4 +38,10 @@ export class UsersService {
 
         return user;
     }
+
+    async validateUserFromJWT(jwtUser: User): Promise<boolean> {
+        const actualUser = await this.userRepository.findOne({ where: { id: jwtUser.id } }).then(actualUser => { return actualUser });
+
+        return (JSON.stringify(jwtUser) === JSON.stringify(actualUser))
+    }
 }
