@@ -39,8 +39,8 @@ export class ReportsController {
 
     @Post('create')
     async createReport(@Req() req: any, @Body() createReportDto: CreateReportDto): Promise<Report> {
-        const reportingUser: User = req.auth.user;
-        return this.reportsService.createReport(reportingUser, createReportDto.reportedUserId, createReportDto.note);
+        const currentUser: User = req.auth.user;
+        return this.reportsService.createReport(currentUser, createReportDto.reportedUserId, createReportDto.note);
     }
 
     @Post('resolve')
