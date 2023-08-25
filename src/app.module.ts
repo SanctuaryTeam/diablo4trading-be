@@ -8,6 +8,7 @@ import { DiabloItemModule } from './diablo-items/diablo-item.module';
 import { ServiceSlotsModule } from './services/service-slots/service-slots.module';
 import { ServicesModule } from './services/services.module';
 import { TradeModule } from './trade/trade.module';
+import { DebugModule } from './debug/debug.module';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { TradeModule } from './trade/trade.module';
         TradeModule,
         ServicesModule,
         ServiceSlotsModule,
+        DebugModule,
     ],
     controllers: [AppController],
     providers: [AppService],
