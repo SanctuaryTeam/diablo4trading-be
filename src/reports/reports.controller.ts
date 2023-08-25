@@ -1,7 +1,9 @@
-import {Controller, Get, Query, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Query, Req, UseGuards} from '@nestjs/common';
 import {ReportsService} from './reports.service';
 import {Report} from './report.entity';
 import {JwtAuthGuard} from '../auth/jwt/jwt.guard';
+import {User} from '../users/users.entity';
+import {CreateReportDto} from './createReport.dto';
 
 @Controller('reports')
 @UseGuards(JwtAuthGuard)
@@ -33,5 +35,11 @@ export class ReportsController {
         @Query('reportedUserId') reportedUserId?: number
     ): Promise<Report[]> {
         return this.reportsService.getByReportedUserId(reportedUserId)
+    }
+
+    @Post('create')
+    async createReport(@Req() req: any, @Body() createReportDto: CreateReportDto): Promise<Report> {
+        const reportingUser: User = req.auth.user;
+        return this.reportsService.createReport(reportingUser, createReportDto.reportedUserId, createReportDto.note);
     }
 }
