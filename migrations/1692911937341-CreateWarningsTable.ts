@@ -35,7 +35,6 @@ export class CreateWarningsTable1692911937341 implements MigrationInterface {
                         isNullable: false,
                         default: 'CURRENT_TIMESTAMP',
                     },
-                    // Add other columns as needed.
                 ],
             }),
         );

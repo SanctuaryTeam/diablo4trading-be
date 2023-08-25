@@ -25,5 +25,4 @@ export class Report {
 
   @Column()
   createdAt: string;
-  // Add other columns or properties as needed.
 }

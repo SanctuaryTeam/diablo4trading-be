@@ -51,7 +51,6 @@ export class CreateReportsTable1692911384562 implements MigrationInterface {
                         isNullable: false,
                         default: 'CURRENT_TIMESTAMP',
                     },
-                    // Add other columns as needed.
                 ],
             }),
         );
