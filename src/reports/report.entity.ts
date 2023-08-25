@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
 
 @Entity()
 export class Report {
@@ -24,5 +24,14 @@ export class Report {
   actionTaken: number;
 
   @Column()
-  createdAt: string;
+  issuedWarningId: number;
+
+  @Column()
+  resolvedBy: number;
+
+  @UpdateDateColumn()
+  resolvedAt: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

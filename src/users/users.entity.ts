@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from 'typeorm';
 
 @Entity()
 export class User {
@@ -23,6 +23,6 @@ export class User {
     @Column()
     bannedUntil: string
 
-    @Column()
-    createdAt: string
+    @CreateDateColumn()
+    createdAt: Date
 }

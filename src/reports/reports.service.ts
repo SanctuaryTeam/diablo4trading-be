@@ -15,6 +15,9 @@ export class ReportsService {
     ) {
     }
 
+    ACTION_NONE = 0;
+    ACTION_WARNED = 1;
+    ACTION_BANNED = 2;
 
     async getById(id: number): Promise<Report | undefined> {
         return this.reportRepository.findOne({where: {id}});
@@ -42,6 +45,10 @@ export class ReportsService {
         return await this.usersService.findById(report.reportingUserId)
     }
 
+    async getAllReportsByReportedUserIdAndEntity(reportedUserId: number, reportedEntityType: number, reportedEntityId: number): Promise<Report[]> {
+        return this.reportRepository.find({where: {reportedUserId, reportedEntityType, reportedEntityId}})
+    }
+
     async createReport(reportingUser: User, reportedUserId: number, note: string): Promise<Report> {
         const report = this.reportRepository.create({
             reportingUserId: reportingUser.id,
@@ -49,10 +56,37 @@ export class ReportsService {
             reportedEntityType: 0,
             reportedEntityId: 0,
             note,
-            actionTaken: 0,
+            actionTaken: this.ACTION_NONE,
         });
 
         await this.reportRepository.save(report);
         return report;
+    }
+
+    async resolveAllRelatedReports(currentUser: User, id: number, actionTaken: number, note?: string): Promise<Report[]> {
+        const report = await this.getById(id);
+        const reports = await this.getAllReportsByReportedUserIdAndEntity(report.reportedUserId, report.reportedEntityType, report.reportedEntityId);
+
+        if (actionTaken === this.ACTION_WARNED) {
+            // todo: issue a warning
+        } else if (actionTaken === this.ACTION_BANNED) {
+            // todo: issue a warning with `is_ban` set to true and ban the user
+        }
+
+        reports.forEach((report: Report) => {
+            this.resolveReport(currentUser, report.id, actionTaken);
+        });
+
+        return await this.getAllReportsByReportedUserIdAndEntity(report.reportedUserId, report.reportedEntityType, report.reportedEntityId);
+    }
+
+    private async resolveReport(currentUser: User, id: number, actionTaken: number, issuedWarningId?: number): Promise<Report> {
+        const report = await this.getById(id);
+        report.actionTaken = actionTaken;
+        report.resolvedBy = currentUser.id;
+        report.resolvedAt = new Date();
+        report.issuedWarningId = issuedWarningId;
+
+        return await this.reportRepository.save(report);
     }
 }

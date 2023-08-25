@@ -30,6 +30,17 @@ export class CreateWarningsTable1692911937341 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
+                        name: 'is_ban',
+                        type: '',
+                        isNullable: false,
+                        default: 0,
+                    },
+                    {
+                        name: 'issued_by',
+                        type: '',
+                        isNullable: false,
+                    },
+                    {
                         name: 'created_at',
                         type: 'datetime',
                         isNullable: false,

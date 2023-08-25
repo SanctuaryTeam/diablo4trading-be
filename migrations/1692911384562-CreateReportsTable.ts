@@ -46,6 +46,21 @@ export class CreateReportsTable1692911384562 implements MigrationInterface {
                         default: 0,
                     },
                     {
+                        name: 'issued_warning_id',
+                        type: 'int',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'resolved_by',
+                        type: 'int',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'resolved_at',
+                        type: 'datetime',
+                        isNullable: true,
+                    },
+                    {
                         name: 'created_at',
                         type: 'datetime',
                         isNullable: false,

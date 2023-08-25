@@ -3,7 +3,7 @@ import {ReportsService} from './reports.service';
 import {Report} from './report.entity';
 import {JwtAuthGuard} from '../auth/jwt/jwt.guard';
 import {User} from '../users/users.entity';
-import {CreateReportDto} from './createReport.dto';
+import {CreateReportDto, ResolveReportDto} from './dto';
 
 @Controller('reports')
 @UseGuards(JwtAuthGuard)
@@ -41,5 +41,11 @@ export class ReportsController {
     async createReport(@Req() req: any, @Body() createReportDto: CreateReportDto): Promise<Report> {
         const reportingUser: User = req.auth.user;
         return this.reportsService.createReport(reportingUser, createReportDto.reportedUserId, createReportDto.note);
+    }
+
+    @Post('resolve')
+    async resolveReport(@Req() req: any, @Body() resolveReportDto: ResolveReportDto): Promise<Report[]> {
+        const currentUser: User = req.auth.user;
+        return this.reportsService.resolveAllRelatedReports(currentUser, resolveReportDto.reportId, resolveReportDto.actionTaken, resolveReportDto.note);
     }
 }
