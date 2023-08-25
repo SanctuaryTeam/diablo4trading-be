@@ -18,6 +18,9 @@ export class Report {
   reportedEntityId: number;
 
   @Column()
+  type: number;
+
+  @Column()
   note: string;
 
   @Column()

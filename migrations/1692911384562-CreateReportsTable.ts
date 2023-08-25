@@ -35,6 +35,11 @@ export class CreateReportsTable1692911384562 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
+                        name: 'type',
+                        type: 'int',
+                        isNullable: false,
+                    },
+                    {
                         name: 'note',
                         type: 'text',
                         isNullable: false,

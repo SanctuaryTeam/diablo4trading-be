@@ -55,6 +55,7 @@ export class ReportsService {
             reportedUserId,
             reportedEntityType: 0,
             reportedEntityId: 0,
+            type: 0,
             note,
             actionTaken: this.ACTION_NONE,
         });
