@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm"
+import {MigrationInterface, QueryRunner, Table} from 'typeorm'
 
 export class CreateWarningsTable1692911937341 implements MigrationInterface {
 
@@ -33,7 +33,7 @@ export class CreateWarningsTable1692911937341 implements MigrationInterface {
                         name: 'created_at',
                         type: 'datetime',
                         isNullable: false,
-                        default: 'CURRENT_TIMESTAMP'
+                        default: 'CURRENT_TIMESTAMP',
                     },
                     // Add other columns as needed.
                 ],

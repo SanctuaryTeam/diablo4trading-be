@@ -1,4 +1,4 @@
-import {Injectable, Module} from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {DebugController} from './debug.controller';
 
 @Module({
