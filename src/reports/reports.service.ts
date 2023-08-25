@@ -43,8 +43,6 @@ export class ReportsService {
     }
 
     async createReport(reportingUser: User, reportedUserId: number, note: string): Promise<Report> {
-
-        // If the user doesn't exist, create a new user with the provided information
         const report = this.reportRepository.create({
             reportingUserId: reportingUser.id,
             reportedUserId,
@@ -55,10 +53,6 @@ export class ReportsService {
         });
 
         await this.reportRepository.save(report);
-
-
-        console.log(report);
-
         return report;
     }
 }
