@@ -32,6 +32,8 @@ services:
         yarn start:dev
     links:
       - db
+    depends_on:
+      - db
 volumes:
   db:
     driver: local

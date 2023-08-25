@@ -16,5 +16,13 @@ export class User {
 
     @Column()
     email: string;
-    // Add other columns or properties as needed.
+
+    @Column()
+    role: number
+
+    @Column()
+    bannedUntil: string
+
+    @Column()
+    createdAt: string
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, Req, UnauthorizedException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
@@ -17,10 +17,10 @@ export class UsersService {
     }
 
     async findOrCreateUser(profile: Partial<User>): Promise<User> {
-        const { discordName, discordId, email, battleNetTag } = profile;
+        const {discordName, discordId, email, battleNetTag} = profile;
 
         // Check if the user already exists based on Discord ID
-        let user = await this.userRepository.findOne({ where: { discordId } });
+        let user = await this.userRepository.findOne({where: {discordId}});
 
         if (!user) {
             // If the user doesn't exist, create a new user with the provided information

@@ -14,12 +14,12 @@ export class CreateUserTable1690411047852 implements MigrationInterface {
                         generationStrategy: 'increment',
                     },
                     {
-                        name: 'discord_name',
+                        name: 'discord_id',
                         type: 'varchar',
                         isNullable: false,
                     },
                     {
-                        name: 'discord_id',
+                        name: 'discord_name',
                         type: 'varchar',
                         isNullable: false,
                     },
@@ -37,7 +37,7 @@ export class CreateUserTable1690411047852 implements MigrationInterface {
                         name: 'role',
                         type: 'int',
                         isNullable: false,
-                        default: 0
+                        default: 0,
                     },
                     {
                         name: 'banned_until',
@@ -48,7 +48,7 @@ export class CreateUserTable1690411047852 implements MigrationInterface {
                         name: 'created_at',
                         type: 'datetime',
                         isNullable: false,
-                        default: 'CURRENT_TIMESTAMP'
+                        default: 'CURRENT_TIMESTAMP',
                     },
                     // Add other columns as needed.
                 ],

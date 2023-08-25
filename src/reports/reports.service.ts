@@ -11,23 +11,23 @@ export class ReportsService {
     ) {
     }
 
-    getHello(): string {
-        return 'hw';
-    }
-
     createReport(): string {
         return 'test';
     }
 
-    async findById(id: number): Promise<Report | undefined> {
-        return this.reportRepository.query('SELECT * FROM report');
+    async getById(id: number): Promise<Report | undefined> {
+        return this.reportRepository.findOne({where: { id }});
     }
 
-    async findByUserId(userId: number): Promise<Report | undefined> {
-        return this.reportRepository.findOne({where: { userId }});
+    async getByReportedUserId(reportedUserId: number): Promise<Report[] | undefined> {
+        return this.reportRepository.find({where: { reportedUserId : reportedUserId }});
     }
 
-    async getAll(): Promise<Report | undefined> {
+    async getByReportingUserId(reportingUserId: number): Promise<Report[] | undefined> {
+        return this.reportRepository.find({where: { reportingUserId : reportingUserId }});
+    }
+
+    async getAll(): Promise<Report[]> {
         return this.reportRepository.query('SELECT * FROM report');
     }
 }

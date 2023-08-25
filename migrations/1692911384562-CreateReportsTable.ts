@@ -20,6 +20,11 @@ export class CreateReportsTable1692911384562 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
+                        name: 'reported_user_id',
+                        type: 'int',
+                        isNullable: false,
+                    },
+                    {
                         name: 'reported_entity_type',
                         type: 'varchar',
                         isNullable: false,

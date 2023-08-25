@@ -6,21 +6,24 @@ export class Report {
   id: number;
 
   @Column()
-  ReportingUserId: number;
+  reportingUserId: number;
 
   @Column()
-  ReportedEntityType: number;
+  reportedUserId: number;
 
   @Column()
-  ReportedEntityId: number;
+  reportedEntityType: number;
 
   @Column()
-  Note: string;
+  reportedEntityId: number;
 
   @Column()
-  ActionTaken: number;
+  note: string;
 
   @Column()
-  CreatedAt: string;
+  actionTaken: number;
+
+  @Column()
+  createdAt: string;
   // Add other columns or properties as needed.
 }

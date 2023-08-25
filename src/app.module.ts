@@ -5,7 +5,8 @@ import {AuthModule} from './auth/auth.module';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {typeOrmConfig} from './config/database.config';
 import {ConfigModule, ConfigService} from '@nestjs/config';
-import {ReportsModule} from "./reports/reports.module";
+import {ReportsModule} from './reports/reports.module';
+import {DebugModule} from './debug/debug.module';
 
 @Module({
     imports: [
@@ -16,10 +17,11 @@ import {ReportsModule} from "./reports/reports.module";
             useFactory: async (configService: ConfigService) => {
                 await ConfigModule.envVariablesLoaded;
                 return typeOrmConfig(configService);
-            }
+            },
         }),
         ConfigModule.forRoot(),
-        ReportsModule],
+        ReportsModule,
+        DebugModule],
     controllers: [AppController],
     providers: [AppService],
 })
