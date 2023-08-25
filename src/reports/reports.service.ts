@@ -1,7 +1,7 @@
 // reports.service.ts
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {Repository, IsNull} from 'typeorm';
 import {Report} from './report.entity';
 import {UsersService} from '../users/users.service';
 import {User} from '../users/users.entity';
@@ -33,6 +33,10 @@ export class ReportsService {
 
     async getAll(): Promise<Report[]> {
         return this.reportRepository.query('SELECT * FROM report');
+    }
+
+    async getAllUnresolved(): Promise<Report[]> {
+        return this.reportRepository.find({where: {resolvedAt: IsNull()}, order: {createdAt: 'ASC'}})
     }
 
     async getReportedUser(id: number): Promise<User> {

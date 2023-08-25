@@ -16,6 +16,11 @@ export class ReportsController {
         return this.reportsService.getAll()
     }
 
+    @Get('unresolved')
+    async getUnresolvedReports(): Promise<Report[]> {
+        return this.reportsService.getAllUnresolved()
+    }
+
     @Get('get')
     async get(
         @Query('id') id?: number
