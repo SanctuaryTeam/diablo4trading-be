@@ -5,7 +5,6 @@ import {Repository, IsNull} from 'typeorm';
 import {Report} from './report.entity';
 import {UsersService} from '../users/users.service';
 import {User} from '../users/users.entity';
-import {ReportsModule} from './reports.module';
 
 @Injectable()
 export class ReportsService {
