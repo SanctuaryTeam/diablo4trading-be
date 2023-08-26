@@ -18,7 +18,9 @@ async function bootstrap() {
         credentials: true,
     };
     app.enableCors(corsOptions);
-    await app.listen(3000);
+
+    const backendPort = configService.get<number>('BACKEND_PORT', 3000);
+    await app.listen(backendPort);
 }
 
 bootstrap();
