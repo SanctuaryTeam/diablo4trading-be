@@ -13,7 +13,8 @@ services:
       - .:/app
     # Expose the development server port (if needed)
     ports:
-      - '3000:3000'
+        # use the BACKEND_PORT variable from .env or 3000 by default
+      - '${BACKEND_PORT:-3000}:${BACKEND_PORT:-3000}'
     # Install and run the development server using Yarn
     command:
       - sh
