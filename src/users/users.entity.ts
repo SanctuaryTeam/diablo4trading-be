@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from 'typeorm';
 
 @Entity()
 export class User {
@@ -16,5 +16,13 @@ export class User {
 
     @Column()
     email: string;
-    // Add other columns or properties as needed.
+
+    @Column()
+    role: number
+
+    @Column()
+    bannedUntil: string
+
+    @CreateDateColumn()
+    createdAt: Date
 }

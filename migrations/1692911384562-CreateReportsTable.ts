@@ -1,10 +1,11 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import {MigrationInterface, QueryRunner, Table} from 'typeorm'
 
-export class CreateUserTable1690411047852 implements MigrationInterface {
+export class CreateReportsTable1692911384562 implements MigrationInterface {
+
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'user',
+                name: 'report',
                 columns: [
                     {
                         name: 'id',
@@ -14,33 +15,53 @@ export class CreateUserTable1690411047852 implements MigrationInterface {
                         generationStrategy: 'increment',
                     },
                     {
-                        name: 'discord_id',
+                        name: 'reporting_user_id',
+                        type: 'int',
+                        isNullable: false,
+                    },
+                    {
+                        name: 'reported_user_id',
+                        type: 'int',
+                        isNullable: false,
+                    },
+                    {
+                        name: 'reported_entity_type',
                         type: 'varchar',
                         isNullable: false,
                     },
                     {
-                        name: 'discord_name',
+                        name: 'reported_entity_id',
                         type: 'varchar',
                         isNullable: false,
                     },
                     {
-                        name: 'battle_net_tag',
-                        type: 'varchar',
+                        name: 'type',
+                        type: 'int',
                         isNullable: false,
                     },
                     {
-                        name: 'email',
-                        type: 'varchar',
+                        name: 'note',
+                        type: 'text',
                         isNullable: false,
                     },
                     {
-                        name: 'role',
+                        name: 'action_taken',
                         type: 'int',
                         isNullable: false,
                         default: 0,
                     },
                     {
-                        name: 'banned_until',
+                        name: 'issued_warning_id',
+                        type: 'int',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'resolved_by',
+                        type: 'int',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'resolved_at',
                         type: 'datetime',
                         isNullable: true,
                     },
@@ -50,13 +71,13 @@ export class CreateUserTable1690411047852 implements MigrationInterface {
                         isNullable: false,
                         default: 'CURRENT_TIMESTAMP',
                     },
-                    // Add other columns as needed.
                 ],
             }),
         );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('user');
+        await queryRunner.dropTable('report');
     }
+
 }
