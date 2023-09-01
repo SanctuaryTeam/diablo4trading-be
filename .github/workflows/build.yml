@@ -1,10 +1,6 @@
 name: Build and Test
 
 on:
-  push:
-    branches:
-      - Feature/add-actions
-
   pull_request:
     branches:
       - main
