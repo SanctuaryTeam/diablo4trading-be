@@ -109,7 +109,7 @@ class CustomQueryBuilder {
 
     searchByTitle(title?: string): CustomQueryBuilder {
         if (title) {
-            this.queryBuilder = this.queryBuilder.orWhere(
+            this.queryBuilder = this.queryBuilder.andWhere(
                 'service.title LIKE :title',
                 { title: `%${title}%` },
             );
@@ -122,6 +122,16 @@ class CustomQueryBuilder {
             this.queryBuilder = this.queryBuilder.andWhere(
                 `(service.tags & :tags) = :tags`,
                 { tags },
+            );
+        }
+        return this;
+    }
+
+    searchByRegions(regions?: number): CustomQueryBuilder {
+        if (typeof regions === 'number') {
+            this.queryBuilder = this.queryBuilder.andWhere(
+                `(service.regions & :regions) = :regions`,
+                { regions },
             );
         }
         return this;

@@ -38,6 +38,9 @@ export class Service {
     @Column({ nullable: false, default: 1 })
     tags: number;
 
+    @Column({ nullable: false, default: 1 })
+    regions: number;
+
     @Column({ nullable: false, default: 3 })
     maxAcceptedSlots: number;
 

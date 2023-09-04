@@ -34,6 +34,7 @@ export class ServicesController {
         @Query('serverType') serverType?: string,
         @Query('title') title?: string,
         @Query('tags', OptionalParseIntPipe) tags?: number,
+        @Query('regions', OptionalParseIntPipe) regions?: number,
         @Query('userId', OptionalParseIntPipe) userId?: number,
         @Query('deleted') deleted?: boolean,
         @Query('offset', OptionalParseIntPipe) offset?: number,
@@ -45,6 +46,7 @@ export class ServicesController {
             .searchByRealmType(serverType)
             .searchByTitle(title)
             .searchByTags(tags)
+            .searchByRegions(regions)
             .searchByUserId(userId)
             .searchByDeleted(deleted === true)
             .includeSlots()
