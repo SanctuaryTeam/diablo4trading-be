@@ -6,7 +6,7 @@ import { ItemListing, ItemListingState } from '../item-listing.entity';
 import { ServiceResponseException } from '../../common/exceptions';
 
 export type BidType = 'bid' | 'buyout';
-export type BidCreationData = Pick<ItemListingBid, 'userId' | 'bidAmount'> & { itemListingId: string; type: BidType };
+export type BidCreationData = Pick<ItemListingBid, 'userId' | 'bidAmount'> & { itemListingUuid: string; type: BidType };
 
 const MAX_DEADLOCK_RETRIES = 10;
 const DATABASE_TYPE = process.env.DATABASE_TYPE;
@@ -61,12 +61,12 @@ export class ItemListingBidsService {
      * currentBidPrice - the current highest bid
      * bidIncrement - the amount the next bid must be greater than the current bid
      */
-    private async createBidTransaction ( { type, bidAmount, userId, itemListingId }: BidCreationData ) {
+    private async createBidTransaction ( { type, bidAmount, userId, itemListingUuid }: BidCreationData ) {
         const manager = this.itemListingBidsRepository.manager;
 
         return await manager.transaction ( async ( transactionalManager: EntityManager ) => {
             const itemListing = await transactionalManager.findOne ( ItemListing, {
-                where: { uuid: itemListingId },
+                where: { uuid: itemListingUuid },
                 ...( DATABASE_TYPE !== 'sqlite'
                     ? { lock: { mode: 'pessimistic_write' } }
                     : {} ),
@@ -76,7 +76,8 @@ export class ItemListingBidsService {
                 throw new ServiceResponseException ( BID_ERROR_CODES.LISTING_NOT_FOUND, BID_ERROR_MESSAGES.LISTING_NOT_FOUND );
             }
 
-            const { buyNowPrice, currentBidPrice, openingBid } = itemListing;
+
+            const { buyNowPrice, currentBidPrice, openingBid, id: itemListingId } = itemListing;
             const bidIncrement = itemListing.bidIncrement || 0;
 
             if ( itemListing.state !== ItemListingState.ACTIVE ) {
