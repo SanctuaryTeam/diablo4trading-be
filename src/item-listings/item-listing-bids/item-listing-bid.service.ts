@@ -66,7 +66,7 @@ export class ItemListingBidsService {
 
         return await manager.transaction ( async ( transactionalManager: EntityManager ) => {
             const itemListing = await transactionalManager.findOne ( ItemListing, {
-                where: { id: itemListingId },
+                where: { uuid: itemListingId },
                 ...( DATABASE_TYPE !== 'sqlite'
                     ? { lock: { mode: 'pessimistic_write' } }
                     : {} ),
