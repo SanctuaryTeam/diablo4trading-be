@@ -13,6 +13,7 @@ export class UsersService {
     async findById(id: number): Promise<User | undefined> {
         return this.userRepository.findOne({ where: { id } });
     }
+
     async findOne(discordId: string): Promise<User | undefined> {
         return this.userRepository.findOne({ where: { discordId } });
     }
@@ -34,8 +35,6 @@ export class UsersService {
 
             await this.userRepository.save(user);
         }
-
-        console.log(user);
 
         return user;
     }

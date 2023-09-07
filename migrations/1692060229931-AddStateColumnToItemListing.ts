@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
 export class AddStateColumnToItemListing1692060229931 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.addColumn(
             'item_listing',
@@ -17,5 +16,4 @@ export class AddStateColumnToItemListing1692060229931 implements MigrationInterf
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropColumn('item_listing', 'state');
     }
-
 }

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { ServiceResponseException } from '../common/exceptions';
+import { User } from '../users/users.entity';
 import { Service } from './services.entity';
-
 // Minutes
 const MIN_BUMP_INTERVAL = 30;
 
@@ -25,8 +25,8 @@ export class ServicesService {
         );
     }
 
-    async countNotDeletedServices(): Promise<number> {
-        return await this.serviceRepository.count({ where: { deleted: false } });
+    async countNotDeletedServices(user: User): Promise<number> {
+        return await this.serviceRepository.count({ where: { deleted: false, userId: user.id } });
     }
 
     async createService(data: Partial<Service>): Promise<Service> {
@@ -89,6 +89,7 @@ class CustomQueryBuilder {
 
     withUser(): CustomQueryBuilder {
         this.queryBuilder = this.queryBuilder.innerJoinAndSelect('service.user', 'user');
+        // .leftJoinAndSelect('user.receivedVouches', 'receivedVouches');;
         return this;
     }
 
