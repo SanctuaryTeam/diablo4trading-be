@@ -6,7 +6,7 @@ import { ItemListing, ItemListingState } from '../item-listing.entity';
 import { ServiceResponseException } from '../../common/exceptions';
 
 export type BidType = 'bid' | 'buyout';
-export type BidCreationData = Pick<ItemListingBid, 'userId' | 'bidAmount'> & { 'itemListingId': string, type: BidType };
+export type BidCreationData = Pick<ItemListingBid, 'userId' | 'bidAmount'> & { itemListingId: string, type: BidType };
 
 const MAX_DEADLOCK_RETRIES = 10;
 const DATABASE_TYPE = process.env.DATABASE_TYPE;
