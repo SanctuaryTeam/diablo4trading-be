@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { DiabloItem } from '../diablo-items/diablo-item.entity';
 import { User } from '../users/users.entity';
+import { v4 as uuid } from 'uuid';
 
 export enum ItemListingState {
     ACTIVE = 'ACTIVE',
@@ -19,8 +20,16 @@ export enum ItemListingState {
 
 @Entity ( 'item_listing' )
 export class ItemListing {
-    @PrimaryGeneratedColumn ( 'uuid' )
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @BeforeInsert()
+    generateUuid() {
+        this.uuid = uuid();
+    }
+    
+    @Column({ type: 'uuid', nullable: false, default: '' })
+    uuid: string;
 
     @Column ( { type: 'integer', name: 'seller_id', nullable: false } )
     sellerId: number;
