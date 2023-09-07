@@ -8,10 +8,16 @@ export class CreateItemListingTable1691959323431 implements MigrationInterface {
                 columns: [
                     {
                         name: 'id',
-                        type: 'uuid',
+                        type: 'integer',
                         isPrimary: true,
-                        generationStrategy: 'uuid',
-                        default: 'uuid_generate_v4()',
+                        isGenerated: true,
+                        generationStrategy: 'increment',
+                    },
+                    {
+                        name: 'uuid',
+                        type: 'varchar',
+                        isNullable: false,
+                        length: '36',
                     },
                     {
                         name: 'seller_id',
