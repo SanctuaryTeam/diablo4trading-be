@@ -2,6 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    Index,
     JoinColumn,
     ManyToOne,
     OneToOne,
@@ -71,6 +72,7 @@ export class Report {
     @JoinColumn({ name: 'reported_service_id' })
     reportedService: Service;
 
+    @Index ( 'reportStatusIdIndex' )
     @Column ( { type: 'integer', name: 'report_status_id', nullable: false } )
     reportStatusId: number;
 
@@ -85,13 +87,16 @@ export class Report {
     @JoinColumn ( { name: 'report_severity_id' } )
     reportSeverity: ReportSeverity;
 
-    @CreateDateColumn({ type: 'datetime', name: 'created_at_utc', nullable: false, default: 'CURRENT_TIMESTAMP' })
-    createdAtUtc: Date;
+    @CreateDateColumn({ type: 'datetime', name: 'created_at', nullable: false, default: 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
     
-    @UpdateDateColumn({ type: 'datetime', name: 'updated_at_utc', nullable: false, default: 'CURRENT_TIMESTAMP' })
-    updatedAtUtc: Date;
+    @UpdateDateColumn({ type: 'datetime', name: 'updated_at', nullable: false, default: 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
     
     @ManyToOne(() => User)
     @JoinColumn({ name: 'updated_by' })
     updatedBy: string;
+
+    @Column({ type: 'boolean', name: 'deleted', default: false })
+    deleted: boolean;
 }

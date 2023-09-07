@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex } from 'typeorm';
 
 export class CreateReportTable1693867595928 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
@@ -66,13 +66,13 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
-                        name: 'created_at_utc',
+                        name: 'created_at',
                         type: 'datetime',
                         isNullable: false,
                         default: 'CURRENT_TIMESTAMP',
                     },
                     {
-                        name: 'updated_at_utc',
+                        name: 'updated_at',
                         type: 'datetime',
                         isNullable: false,
                         default: 'CURRENT_TIMESTAMP',
@@ -82,6 +82,11 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
                         name: 'updated_by',
                         type: 'integer',
                         isNullable: false,
+                    },
+                    {
+                        name: 'deleted',
+                        type: 'boolean',
+                        default: false,
                     },
                 ],
             }),
@@ -177,6 +182,14 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
                 onDelete: 'CASCADE',
             }),
         );
+
+        await queryRunner.createIndex(
+            'report',
+            new TableIndex({
+                name: 'reportStatusIdIndex',
+                columnNames: ['report_status_id'],
+            }),
+        )
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
