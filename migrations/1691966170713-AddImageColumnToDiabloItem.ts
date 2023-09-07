@@ -6,7 +6,6 @@ export class AddImageColumnToDiabloItem1691966170713 implements MigrationInterfa
             'diablo_item',
             new TableColumn({
                 name: 'image',
-                default: 3,
                 type: 'blob',
                 isNullable: true,
             }),
