@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
 export class AAddBidIncrementToItemListing1692060244929 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.addColumn(
             'item_listing',
@@ -17,5 +16,4 @@ export class AAddBidIncrementToItemListing1692060244929 implements MigrationInte
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropColumn('item_listing', 'bid_increment');
     }
-
 }

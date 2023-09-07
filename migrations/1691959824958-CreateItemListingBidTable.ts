@@ -19,7 +19,7 @@ export class CreateItemListingBidTable1691959824958 implements MigrationInterfac
                     },
                     {
                         name: 'item_listing_id',
-                        type: 'uuid',
+                        type: 'integer',
                     },
                     {
                         name: 'bid_amount',

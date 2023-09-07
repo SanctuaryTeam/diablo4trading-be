@@ -16,21 +16,21 @@ export class ItemListingBid {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'integer', name: 'user_id', nullable: false })
+    @Column({ nullable: false })
     userId: number;
 
     @ManyToOne(() => User)
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @Column({ type: 'uuid', name: 'item_listing_id', nullable: false })
-    itemListingId: string;
+    @Column({ nullable: false })
+    itemListingId: number;
 
     @OneToOne(() => ItemListing)
     @JoinColumn({ name: 'item_listing_id' })
     itemListing: ItemListing;
 
-    @Column({ type: 'integer', nullable: true })
+    @Column({ nullable: true })
     bidAmount: number;
 
     @CreateDateColumn()

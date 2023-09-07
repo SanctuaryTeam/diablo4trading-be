@@ -11,11 +11,17 @@ import {
     Post,
     Put,
     Query,
+    Request,
+    UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { RequestModel } from 'src/auth/request.model';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
 import { UsersService } from '../users/users.service';
 import { ServiceSlot } from './service-slots/service-slots.entity';
 import { ServiceSlotsService } from './service-slots/service-slots.service';
+import { ServiceDto } from './service.dto';
 import { Service } from './services.entity';
 import { SERVICE_ERROR_CODES, ServicesService } from './services.service';
 
@@ -38,7 +44,7 @@ export class ServicesController {
         @Query('deleted') deleted?: boolean,
         @Query('offset', OptionalParseIntPipe) offset?: number,
         @Query('limit', OptionalParseIntPipe) limit?: number,
-    ): Promise<Service[]> {
+    ): Promise<ServiceDto[]> {
         return await this.servicesService
             .createQuery()
             .withUser()
@@ -50,16 +56,22 @@ export class ServicesController {
             .includeSlots()
             .paginate(offset, limit)
             .orderBy('bumpedAt', 'DESC')
-            .getMany();
+            .getMany()
+            .then((services) => services.map(service => ServiceDto.fromEntity(service)));
     }
 
     @Post('')
-    async create(@Body() dto: Partial<Service>): Promise<Service> {
-        const notDeletedServicesCount = await this.servicesService.countNotDeletedServices();
+    @UseGuards(JwtAuthGuard)
+    async create(@Body() dto: Partial<Service>, @Request() req: RequestModel): Promise<Service> {
+        const user = req.user;
+
+        const notDeletedServicesCount = await this.servicesService.countNotDeletedServices(user);
 
         if (notDeletedServicesCount >= MAX_SERVICE_COUNT) {
             throw new BadRequestException(`Cannot create more than ${MAX_SERVICE_COUNT} non-deleted records`);
         }
+
+        dto.user = req.user;
 
         return await this.servicesService.createService(dto);
     }
