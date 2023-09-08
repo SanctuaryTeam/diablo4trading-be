@@ -9,34 +9,46 @@ export class UpdateUserVouchColumns1694126788000 implements MigrationInterface {
         await queryRunner.renameColumn('user_vouch', 'service_id', 'reference_id');
 
         // Add state column
-        await queryRunner.addColumn('user_vouch', new TableColumn({
-            name: 'state',
-            type: 'integer',
-            default: 0,  // Or whatever default value you want
-            isNullable: false
-        }));
+        await queryRunner.addColumn(
+            'user_vouch',
+            new TableColumn({
+                name: 'state',
+                type: 'integer',
+                default: 0, // Or whatever default value you want
+                isNullable: false,
+            }),
+        );
 
         // Add created_at column
-        await queryRunner.addColumn('user_vouch', new TableColumn({
-            name: 'created_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-        }));
+        await queryRunner.addColumn(
+            'user_vouch',
+            new TableColumn({
+                name: 'created_at',
+                type: 'timestamp',
+                default: 'CURRENT_TIMESTAMP',
+            }),
+        );
 
         // Add updated_at column
-        await queryRunner.addColumn('user_vouch', new TableColumn({
-            name: 'updated_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
-        }));
+        await queryRunner.addColumn(
+            'user_vouch',
+            new TableColumn({
+                name: 'updated_at',
+                type: 'timestamp',
+                default: 'CURRENT_TIMESTAMP',
+                onUpdate: 'CURRENT_TIMESTAMP',
+            }),
+        );
 
         // Add deleted column
-        await queryRunner.addColumn('user_vouch', new TableColumn({
-            name: 'deleted',
-            type: 'boolean',
-            default: false,
-        }));
+        await queryRunner.addColumn(
+            'user_vouch',
+            new TableColumn({
+                name: 'deleted',
+                type: 'boolean',
+                default: false,
+            }),
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

@@ -1,4 +1,4 @@
-import { IsInt, IsBoolean, IsString, Min, Max } from 'class-validator';
+import { IsBoolean, IsInt, IsString, Max, Min } from 'class-validator';
 
 export class CloseUserVouchDto {
     @IsInt()

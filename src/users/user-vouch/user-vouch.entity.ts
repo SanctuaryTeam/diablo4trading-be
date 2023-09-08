@@ -1,8 +1,16 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { User } from '../users.entity'; // import the User entity
-import { PolymorphicParent } from 'typeorm-polymorphic';
 import { ItemListing } from 'src/item-listings/item-listing.entity';
 import { Service } from 'src/services/services.entity';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from 'typeorm';
+import { PolymorphicParent } from 'typeorm-polymorphic';
+import { User } from '../users.entity';
 import { UserVouchState } from './user-vouch-state.enum';
 
 @Entity('user_vouch')
