@@ -1,8 +1,8 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateWarningTable1694096050885 implements MigrationInterface {
+export class CreateBanTable1694146614110 implements MigrationInterface {
 
-    tableName = 'warning';
+    tableName = 'ban';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
 
@@ -19,7 +19,7 @@ export class CreateWarningTable1694096050885 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
-                        name: 'warning_user_id',
+                        name: 'ban_user_id',
                         type: 'integer',
                         isNullable: false,
                     },
@@ -29,9 +29,19 @@ export class CreateWarningTable1694096050885 implements MigrationInterface {
                         isNullable: true,
                     },
                     {
-                        name: 'warning_description',
+                        name: 'ban_description',
                         type: 'varchar',
                         isNullable: true,
+                    },
+                    {
+                        name: 'ban_end_date',
+                        type: 'datetime',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'permanent_ban',
+                        type: 'boolean',
+                        default: false,
                     },
                     {
                         name: 'deleted',
@@ -41,7 +51,7 @@ export class CreateWarningTable1694096050885 implements MigrationInterface {
                 ],
                 foreignKeys: [
                     {
-                        columnNames: ['warning_user_id'],
+                        columnNames: ['ban_user_id'],
                         referencedColumnNames: ['id'],
                         referencedTableName: 'user',
                         onDelete: 'CASCADE',
