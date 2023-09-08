@@ -23,9 +23,9 @@ export class UserVouchService {
         let referenceExists = false;
 
         if (referenceType === 'ItemListing') {
-            referenceExists = !!(await this.itemListingRepository.findOne(referenceId));
+            referenceExists = !!(await this.itemListingRepository.findOne({ where: { id: referenceId }}));
         } else if (referenceType === 'Service') {
-            referenceExists = !!(await this.serviceRepository.findOne(referenceId));
+            referenceExists = !!(await this.serviceRepository.findOne({ where: { id: referenceId }}));
         }
 
         if (!referenceExists) {
