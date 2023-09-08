@@ -18,7 +18,7 @@ export class UserDto implements Partial<IUser> {
         dto.battleNetTag = entity.battleNetTag;
         if (entity.receivedVouches && entity.receivedVouches.length > 0) {
             dto.vouchScore = entity.receivedVouches.reduce((acc, curr) => {
-                return acc + (curr.is_positive ? 1 : -1);
+                return acc + (curr.isPositive ? 1 : -1);
             }, 0);
 
             dto.vouchRating = entity.receivedVouches.reduce((acc, curr) => {
