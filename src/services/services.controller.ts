@@ -23,7 +23,7 @@ import { ServiceSlotsService } from './service-slots/service-slots.service';
 import { ServiceDto } from './service.dto';
 import { Service } from './services.entity';
 import { SERVICE_ERROR_CODES, ServicesService } from './services.service';
-import { NoOpGuard } from 'src/auth/no-op.guard';
+import { SkipGuards } from 'src/auth/skip-guards.decorator';
 
 const MAX_SERVICE_COUNT = 3;
 
@@ -36,7 +36,7 @@ export class ServicesController {
         private readonly usersService: UsersService,
     ) {}
 
-    @UseGuards(NoOpGuard)
+    @SkipGuards()
     @Get('')
     async search(
         @Query('serverType') serverType?: string,

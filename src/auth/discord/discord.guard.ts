@@ -1,6 +1,6 @@
 import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { OAuth2Exception } from '../oauth2.exception';
+import { AuthGuard } from '../auth.guard';
 
 @Injectable()
 export class DiscordAuthGuard extends AuthGuard('discord') {
