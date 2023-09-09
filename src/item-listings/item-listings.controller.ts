@@ -20,7 +20,9 @@ import { ItemListingBid } from './item-listing-bids/item-listing-bid.entity';
 import { BID_ERROR_CODES, BidCreationData, ItemListingBidsService } from './item-listing-bids/item-listing-bid.service';
 import { ItemListing } from './item-listing.entity';
 import { ItemListingsService, TradePostCreateData } from './item-listings.service';
+import { NoOpGuard } from 'src/auth/no-op.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('listings')
 export class ItemListingsController implements OnModuleInit {
     private diabloItemsMock: IDiabloItem[] = [];
@@ -42,8 +44,8 @@ export class ItemListingsController implements OnModuleInit {
         return await this.itemListingsService.createItemAndListing(body);
     }
 
+    @UseGuards(NoOpGuard)
     @Get('search')
-    @UseGuards(JwtAuthGuard)
     async search(@Query() query: API.TradeGetSearchQuery): Promise<API.TradeGetSearchResponse> {
         const { serverType } = query;
         if (!Game.ServerType[serverType]) {
