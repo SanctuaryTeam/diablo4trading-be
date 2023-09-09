@@ -14,7 +14,6 @@ import {
     Request,
     UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { RequestModel } from 'src/auth/request.model';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
@@ -24,9 +23,11 @@ import { ServiceSlotsService } from './service-slots/service-slots.service';
 import { ServiceDto } from './service.dto';
 import { Service } from './services.entity';
 import { SERVICE_ERROR_CODES, ServicesService } from './services.service';
+import { NoOpGuard } from 'src/auth/no-op.guard';
 
 const MAX_SERVICE_COUNT = 3;
 
+@UseGuards(JwtAuthGuard)
 @Controller('services')
 export class ServicesController {
     constructor(
@@ -35,6 +36,7 @@ export class ServicesController {
         private readonly usersService: UsersService,
     ) {}
 
+    @UseGuards(NoOpGuard)
     @Get('')
     async search(
         @Query('serverType') serverType?: string,
@@ -61,7 +63,6 @@ export class ServicesController {
     }
 
     @Post('')
-    @UseGuards(JwtAuthGuard)
     async create(@Body() dto: Partial<Service>, @Request() req: RequestModel): Promise<Service> {
         const user = req.user;
 
@@ -134,11 +135,14 @@ export class ServicesController {
         }
     }
 
-    @Post(':id/claim-slot/:userId')
+    @Post(':id/claim-slot')
     async claimSlot(
         @Param('id') id: number,
-        @Param('userId') userId: number,
+        @Request() req: RequestModel
     ): Promise<ServiceSlot> {
+
+        const userId = req.user.id;
+
         const existingService = await this.servicesService
             .createQuery()
             .searchById(id)
@@ -146,13 +150,6 @@ export class ServicesController {
 
         if (!existingService) {
             throw new NotFoundException(`Service with ID ${id} not found`);
-        }
-
-        // Check if the user with the provided userId exists
-        const user = await this.usersService.findById(userId);
-
-        if (!user) {
-            throw new NotFoundException(`User with ID ${userId} not found`);
         }
 
         // Creating a new ServiceSlot
