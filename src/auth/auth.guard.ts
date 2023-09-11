@@ -21,10 +21,6 @@ export const AuthGuard = (type?: string | string[]) => {
             }
             return super.canActivate(context);
         }
-
-        handleRequest(err, user, info?, context?, status?) {
-            return super.handleRequest(err, user, info, context, status);
-        }
     }
 
     return AuthGuard;
