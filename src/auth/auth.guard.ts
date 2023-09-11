@@ -23,11 +23,7 @@ export const AuthGuard = (type?: string | string[]) => {
         }
 
         handleRequest(err, user, info?, context?, status?) {
-            // handle error, user, info as needed
-            if (err || !user) {
-                throw err;
-            }
-            return user;
+            return super.handleRequest(err, user, info, context, status);  
         }
     }
 

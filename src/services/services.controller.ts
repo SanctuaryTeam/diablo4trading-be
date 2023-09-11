@@ -140,6 +140,7 @@ export class ServicesController {
         @Param('id') id: number,
         @Request() req: RequestModel
     ): Promise<ServiceSlot> {
+        console.log(req)
 
         const userId = req.user.id;
 
@@ -147,6 +148,8 @@ export class ServicesController {
             .createQuery()
             .searchById(id)
             .getOne();
+
+            console.log(existingService)
 
         if (!existingService) {
             throw new NotFoundException(`Service with ID ${id} not found`);

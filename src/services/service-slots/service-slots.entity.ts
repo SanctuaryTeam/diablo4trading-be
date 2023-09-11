@@ -10,13 +10,9 @@ import {
 
 import { User } from '../../users/users.entity';
 import { Service } from '../services.entity';
+import { API } from '@sanctuaryteam/shared';
 
-export enum SERVICE_SLOT_STATES {
-    PENDING = 'PENDING',
-    ACCEPTED = 'ACCEPTED',
-    REJECTED = 'REJECTED',
-    ENDED = 'ENDED',
-}
+
 
 @Entity({ name: 'service_slot' })
 export class ServiceSlot {
@@ -25,9 +21,9 @@ export class ServiceSlot {
 
     @Column({
         nullable: false,
-        default: SERVICE_SLOT_STATES.PENDING,
+        default: API.ServiceSlotStates.Pending,
     })
-    state: SERVICE_SLOT_STATES;
+    state: API.ServiceSlotStates;
 
     @ManyToOne(() => Service, { nullable: false })
     @JoinColumn({ name: 'service_id' })
