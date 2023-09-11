@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { RequestModel } from 'src/auth/request.model';
+import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
 import { UsersService } from '../users/users.service';
 import { ServiceSlot } from './service-slots/service-slots.entity';
@@ -23,7 +24,6 @@ import { ServiceSlotsService } from './service-slots/service-slots.service';
 import { ServiceDto } from './service.dto';
 import { Service } from './services.entity';
 import { SERVICE_ERROR_CODES, ServicesService } from './services.service';
-import { SkipGuards } from 'src/auth/skip-guards.decorator';
 
 const MAX_SERVICE_COUNT = 3;
 
@@ -138,9 +138,8 @@ export class ServicesController {
     @Post(':id/claim-slot')
     async claimSlot(
         @Param('id') id: number,
-        @Request() req: RequestModel
+        @Request() req: RequestModel,
     ): Promise<ServiceSlot> {
-
         const userId = req.user.id;
 
         const existingService = await this.servicesService

@@ -1,4 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { UserVouchCalculation } from './user-vouch/user-vouch-calculation.entity';
 import { UserVouch } from './user-vouch/user-vouch.entity';
 import { IUser } from './user.interface';
 
@@ -24,4 +25,8 @@ export class User implements IUser {
 
     @OneToMany(() => UserVouch, userVouch => userVouch.author)
     givenVouches: UserVouch[];
+
+    @OneToOne(() => UserVouchCalculation, vouchCalculation => vouchCalculation.user, { eager: true, cascade: true })
+    @JoinColumn({ name: 'id', referencedColumnName: 'userId' })
+    vouchCalculation: UserVouchCalculation;
 }

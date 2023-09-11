@@ -1,8 +1,8 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
-import { SKIP_GUARDS_KEY } from './skip-guards.decorator';
 import { Observable } from 'rxjs';
+import { SKIP_GUARDS_KEY } from './skip-guards.decorator';
 
 export const AuthGuard = (type?: string | string[]) => {
     @Injectable()
@@ -23,13 +23,9 @@ export const AuthGuard = (type?: string | string[]) => {
         }
 
         handleRequest(err, user, info?, context?, status?) {
-            // handle error, user, info as needed
-            if (err || !user) {
-                throw err;
-            }
-            return user;
+            return super.handleRequest(err, user, info, context, status);
         }
     }
 
     return AuthGuard;
-}
+};
