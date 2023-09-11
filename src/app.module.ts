@@ -3,7 +3,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { DatabaseModule } from './database.module';
+import { DatabaseModule } from '../database/database.module';
 import { DiabloItemModule } from './diablo-items/diablo-item.module';
 import { ItemListingsModule } from './item-listings/item-listings.module';
 import { LoggingMiddleware } from './middleware/request-logging.middleware';

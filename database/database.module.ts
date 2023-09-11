@@ -3,8 +3,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './config/database.config';
-import { DiabloItemAffix } from './diablo-items/diablo-item-affix.entity';
+import { typeOrmConfig } from '../src/config/database.config';
+import { DiabloItemAffix } from '../src/diablo-items/diablo-item-affix.entity';
 
 @Module({
     imports: [
