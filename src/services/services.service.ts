@@ -88,8 +88,8 @@ class CustomQueryBuilder {
     }
 
     withUser(): CustomQueryBuilder {
-        this.queryBuilder = this.queryBuilder.innerJoinAndSelect('service.user', 'user');
-        // .leftJoinAndSelect('user.receivedVouches', 'receivedVouches');;
+        this.queryBuilder = this.queryBuilder.innerJoinAndSelect('service.user', 'user')
+            .leftJoinAndSelect('user.vouchCalculation', 'vouchCalculation');
         return this;
     }
 
