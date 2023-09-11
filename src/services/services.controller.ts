@@ -147,8 +147,6 @@ export class ServicesController {
             .searchById(id)
             .getOne();
 
-            console.log(existingService)
-
         if (!existingService) {
             throw new NotFoundException(`Service with ID ${id} not found`);
         }

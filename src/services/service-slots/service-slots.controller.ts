@@ -9,10 +9,10 @@ import {
     Put,
     Query,
 } from '@nestjs/common';
-import { OptionalParseIntPipe } from '../../pipes/optional-parse-int-pipe';
-import {ServiceSlot } from './service-slots.entity';
-import { SERVICE_SLOT_ERROR_CODES, ServiceSlotsService } from './service-slots.service';
 import { API } from '@sanctuaryteam/shared';
+import { OptionalParseIntPipe } from '../../pipes/optional-parse-int-pipe';
+import { ServiceSlot } from './service-slots.entity';
+import { SERVICE_SLOT_ERROR_CODES, ServiceSlotsService } from './service-slots.service';
 
 const STATE_TRANSITIONS_MAP = {
     [API.ServiceSlotStates.Pending]: [API.ServiceSlotStates.Accepted, API.ServiceSlotStates.Rejected],

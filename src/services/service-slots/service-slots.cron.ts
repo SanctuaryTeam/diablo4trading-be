@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
+import { API } from '@sanctuaryteam/shared';
 import { Repository } from 'typeorm';
 import { ServiceSlot } from './service-slots.entity';
-import { API } from '@sanctuaryteam/shared';
 
 // 24 hours
 const EXPIRATION_TIME_SECONDS = 60 * 60 * 24;

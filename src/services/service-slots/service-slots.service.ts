@@ -1,9 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { API } from '@sanctuaryteam/shared';
 import { Not, Repository, SelectQueryBuilder } from 'typeorm';
 import { ServiceResponseException } from '../../common/exceptions';
 import { ServiceSlot } from './service-slots.entity';
-import { API } from '@sanctuaryteam/shared';
 
 export enum SERVICE_SLOT_ERROR_CODES {
     SLOT_NOT_FOUND = 'SLOT_NOT_FOUND',

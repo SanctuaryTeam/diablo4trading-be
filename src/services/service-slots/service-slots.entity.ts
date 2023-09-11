@@ -8,11 +8,9 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
+import { API } from '@sanctuaryteam/shared';
 import { User } from '../../users/users.entity';
 import { Service } from '../services.entity';
-import { API } from '@sanctuaryteam/shared';
-
-
 
 @Entity({ name: 'service_slot' })
 export class ServiceSlot {
