@@ -2,7 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SERVICE_SLOT_STATES, ServiceSlot } from './service-slots.entity';
+import { ServiceSlot } from './service-slots.entity';
+import { API } from '@sanctuaryteam/shared';
 
 // 24 hours
 const EXPIRATION_TIME_SECONDS = 60 * 60 * 24;
@@ -36,17 +37,17 @@ export class ServiceSlotsCronService {
                     .where(
                         `(service_slot.state = :pending OR service_slot.state = :accepted) AND service_slot.created_at < :validTime`,
                         {
-                            pending: SERVICE_SLOT_STATES.PENDING,
-                            accepted: SERVICE_SLOT_STATES.ACCEPTED,
+                            pending: API.ServiceSlotStates.Pending,
+                            accepted: API.ServiceSlotStates.Accepted,
                             validTime,
                         },
                     )
                     .getMany();
 
                 const promises = outdatedServiceSlots.map(slot => {
-                    const newState = slot.state === SERVICE_SLOT_STATES.PENDING
-                        ? SERVICE_SLOT_STATES.REJECTED
-                        : SERVICE_SLOT_STATES.ENDED;
+                    const newState = slot.state === API.ServiceSlotStates.Pending
+                        ? API.ServiceSlotStates.Rejected
+                        : API.ServiceSlotStates.Ended;
                     return transactionalEntityManager.save(ServiceSlot, { ...slot, state: newState });
                 });
 
