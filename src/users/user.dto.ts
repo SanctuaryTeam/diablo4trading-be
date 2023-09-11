@@ -16,14 +16,9 @@ export class UserDto implements Partial<IUser> {
         const dto = new UserDto();
         dto.discordName = entity.discordName;
         dto.battleNetTag = entity.battleNetTag;
-        if (entity.receivedVouches && entity.receivedVouches.length > 0) {
-            dto.vouchScore = entity.receivedVouches.reduce((acc, curr) => {
-                return acc + (curr.isPositive ? 1 : -1);
-            }, 0);
-
-            dto.vouchRating = entity.receivedVouches.reduce((acc, curr) => {
-                return acc + curr.rating;
-            }, 0) / entity.receivedVouches.length;
+        if (entity.vouchCalculation) {
+            dto.vouchScore = entity.vouchCalculation.score;
+            dto.vouchRating = entity.vouchCalculation.rating;
         } else {
             dto.vouchScore = 0;
             dto.vouchRating = 0;

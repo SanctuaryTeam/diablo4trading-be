@@ -12,6 +12,7 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { API } from '@sanctuaryteam/shared';
+import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { IDiabloItem } from 'src/diablo-items/diablo-item.interface';
 import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
@@ -20,7 +21,6 @@ import { ItemListingBid } from './item-listing-bids/item-listing-bid.entity';
 import { BID_ERROR_CODES, BidCreationData, ItemListingBidsService } from './item-listing-bids/item-listing-bid.service';
 import { ItemListing } from './item-listing.entity';
 import { ItemListingsService, TradePostCreateData } from './item-listings.service';
-import { SkipGuards } from 'src/auth/skip-guards.decorator';
 
 @UseGuards(JwtAuthGuard)
 @Controller('listings')
