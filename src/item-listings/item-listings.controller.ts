@@ -15,8 +15,8 @@ import { API } from '@sanctuaryteam/shared';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { IDiabloItem } from 'src/diablo-items/diablo-item.interface';
 import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
+import { generateMock as generateMockDiabloItems } from '../../database/mocks/diablo-item.mock';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
-import { generateMockDiabloItems } from '../diablo-items/diablo-item.mock';
 import { ItemListingBid } from './item-listing-bids/item-listing-bid.entity';
 import { BID_ERROR_CODES, BidCreationData, ItemListingBidsService } from './item-listing-bids/item-listing-bid.service';
 import { ItemListing } from './item-listing.entity';
@@ -25,7 +25,7 @@ import { ItemListingsService, TradePostCreateData } from './item-listings.servic
 @UseGuards(JwtAuthGuard)
 @Controller('listings')
 export class ItemListingsController implements OnModuleInit {
-    private diabloItemsMock: IDiabloItem[] = [];
+    private diabloItemsMock: Partial<IDiabloItem>[] = [];
 
     constructor(
         private diabloItemService: DiabloItemService,
@@ -74,7 +74,7 @@ export class ItemListingsController implements OnModuleInit {
         const startIndex = (page - 1) * pageSize;
         const endIndex = startIndex + pageSize;
 
-        const paginatedResults: IDiabloItem[] = this.diabloItemsMock.slice(
+        const paginatedResults: Partial<IDiabloItem>[] = this.diabloItemsMock.slice(
             startIndex,
             endIndex,
         );

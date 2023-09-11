@@ -43,7 +43,7 @@ export const typeOrmConfig = (
         type,
         entities: [__dirname + '/../**/*.entity.{js,ts}'],
         synchronize: false,
-        migrations: [__dirname + '/../../migrations/*.{js,ts}'],
+        migrations: [__dirname + '/../../database/migrations/*.{js,ts}'],
         database: configService.get<string>('DATABASE_NAME'),
         logging: isDevelopment,
         namingStrategy: new SnakeNamingStrategy(),

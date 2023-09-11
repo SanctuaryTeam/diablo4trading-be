@@ -29,7 +29,7 @@ export class Service implements IService {
     @Column({ type: 'varchar', length: 1000, nullable: false, default: '' })
     content: string;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, user => user.services)
     @JoinColumn({ name: 'user_id' })
     user: User;
 

@@ -17,6 +17,7 @@ import { DiabloItemAffix } from './diablo-items/diablo-item-affix.entity';
                 entities: [DiabloItemAffix],
                 synchronize: true,
                 logging: false,
+                name: 'memory',
             }),
         }),
         TypeOrmModule.forRootAsync({
@@ -25,7 +26,10 @@ import { DiabloItemAffix } from './diablo-items/diablo-item-affix.entity';
             name: 'default',
             useFactory: async (configService: ConfigService) => {
                 await ConfigModule.envVariablesLoaded;
-                return typeOrmConfig(configService);
+                return {
+                    ...typeOrmConfig(configService),
+                    name: 'default',
+                };
             },
         }),
     ],
