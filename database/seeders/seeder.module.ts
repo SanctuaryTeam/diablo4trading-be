@@ -6,6 +6,9 @@ import { User } from 'src/users/users.entity';
 import { SeederService } from './seeder.service';
 import { ServiceSeeder } from './service.seeder';
 import { UserSeeder } from './user.seeder';
+import { ServiceSlotSeeder } from './service-slot.seeder';
+import { ServiceSlotsService } from 'src/services/service-slots/service-slots.service';
+import { ServiceSlot } from 'src/services/service-slots/service-slots.entity';
 
 @Module({
     imports: [
@@ -13,6 +16,7 @@ import { UserSeeder } from './user.seeder';
         TypeOrmModule.forFeature([
             User,
             Service,
+            ServiceSlot
         ]),
     ],
     providers: [
@@ -24,6 +28,11 @@ import { UserSeeder } from './user.seeder';
         {
             provide: 'ServiceSeeder',
             useClass: ServiceSeeder,
+        },
+        ServiceSlotsService,
+        {
+            provide: 'ServiceSlotSeeder',
+            useClass: ServiceSlotSeeder
         },
     ],
 })
