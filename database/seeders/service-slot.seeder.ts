@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceSlotCreationData, ServiceSlotsService } from 'src/services/service-slots/service-slots.service';
+import { API } from '@sanctuaryteam/shared';
+import { generateMock as generateServiceSlotMock } from 'database/mocks/service-slot.mock';
 import { ServiceSlot } from 'src/services/service-slots/service-slots.entity';
+import { ServiceSlotCreationData, ServiceSlotsService } from 'src/services/service-slots/service-slots.service';
 import { Service } from 'src/services/services.entity';
 import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
-import { generateMock as generateServiceSlotMock } from 'database/mocks/service-slot.mock';
-import { API } from '@sanctuaryteam/shared';
 
 @Injectable()
 export class ServiceSlotSeeder {

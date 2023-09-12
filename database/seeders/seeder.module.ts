@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseModule } from '../database.module';
+import { ServiceSlot } from 'src/services/service-slots/service-slots.entity';
+import { ServiceSlotsService } from 'src/services/service-slots/service-slots.service';
 import { Service } from 'src/services/services.entity';
 import { User } from 'src/users/users.entity';
+import { DatabaseModule } from '../database.module';
 import { SeederService } from './seeder.service';
+import { ServiceSlotSeeder } from './service-slot.seeder';
 import { ServiceSeeder } from './service.seeder';
 import { UserSeeder } from './user.seeder';
-import { ServiceSlotSeeder } from './service-slot.seeder';
-import { ServiceSlotsService } from 'src/services/service-slots/service-slots.service';
-import { ServiceSlot } from 'src/services/service-slots/service-slots.entity';
 
 @Module({
     imports: [
@@ -16,7 +16,7 @@ import { ServiceSlot } from 'src/services/service-slots/service-slots.entity';
         TypeOrmModule.forFeature([
             User,
             Service,
-            ServiceSlot
+            ServiceSlot,
         ]),
     ],
     providers: [
@@ -32,7 +32,7 @@ import { ServiceSlot } from 'src/services/service-slots/service-slots.entity';
         ServiceSlotsService,
         {
             provide: 'ServiceSlotSeeder',
-            useClass: ServiceSlotSeeder
+            useClass: ServiceSlotSeeder,
         },
     ],
 })

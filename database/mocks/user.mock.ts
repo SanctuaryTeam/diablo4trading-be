@@ -19,4 +19,4 @@ export const generateMock: GenerateMock<IUser> = (count: number) => {
     }
 
     return users;
-}
+};

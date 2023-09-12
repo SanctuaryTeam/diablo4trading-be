@@ -49,4 +49,4 @@ export const generateMock: GenerateMock<IDiabloItem> = (count: number, diabloIte
     }
 
     return mockItems;
-}
+};
