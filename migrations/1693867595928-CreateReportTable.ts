@@ -56,14 +56,15 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
                         isNullable: true,
                     },
                     {
-                        name: 'report_status_id',
-                        type: 'integer',
+                        name: 'state',
+                        type: 'varchar',
+                        default: `'PENDING'`,
                         isNullable: false,
                     },
                     {
-                        name: 'report_severity_id',
+                        name: 'assigned_user_id',
                         type: 'integer',
-                        isNullable: false,
+                        isNullable: true,
                     },
                     {
                         name: 'created_at',
@@ -156,19 +157,9 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
         await queryRunner.createForeignKey(
             'report',
             new TableForeignKey({
-                columnNames: ['report_status_id'],
+                columnNames: ['assigned_user_id'],
                 referencedColumnNames: ['id'],
-                referencedTableName: 'report_status',
-                onDelete: 'CASCADE',
-            }),
-        );
-
-        await queryRunner.createForeignKey(
-            'report',
-            new TableForeignKey({
-                columnNames: ['report_severity_id'],
-                referencedColumnNames: ['id'],
-                referencedTableName: 'report_severity',
+                referencedTableName: 'user',
                 onDelete: 'CASCADE',
             }),
         );
@@ -186,8 +177,8 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
         await queryRunner.createIndex(
             'report',
             new TableIndex({
-                name: 'reportStatusIdIndex',
-                columnNames: ['report_status_id'],
+                name: 'reportStateIndex',
+                columnNames: ['state'],
             }),
         )
     }
@@ -204,8 +195,7 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
                     fk.columnNames.indexOf('reported_user_id') !== -1 ||
                     fk.columnNames.indexOf('reported_diablo_item_id') !== -1 ||
                     fk.columnNames.indexOf('reported_service_id') !== -1 ||
-                    fk.columnNames.indexOf('report_status_id') !== -1 ||
-                    fk.columnNames.indexOf('report_severity_id') !== -1 ||
+                    fk.columnNames.indexOf('assigned_user_id') !== -1 ||
                     fk.columnNames.indexOf('updated_by') !== -1
             );
             for (const fk of foreignKeys) {

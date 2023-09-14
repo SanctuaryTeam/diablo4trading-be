@@ -10,7 +10,7 @@ export interface IReport {
     reportedUserId: number | null;
     reportedDiabloItemId: number | null;
     reportedServiceId: number | null;
-    reportStatusId: number;
-    reportSeverityId: number;
+    state: string;
+    assignedUserId: number | null;
     updatedBy: string;
 }

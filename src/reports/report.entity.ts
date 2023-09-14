@@ -2,7 +2,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    Index,
     JoinColumn,
     ManyToOne,
     OneToOne,
@@ -12,11 +11,17 @@ import {
 
 import { DiabloItem } from 'src/diablo-items/diablo-item.entity';
 import { ReportReason } from './report-reason/report-reason.entity';
-import { ReportSeverity } from './report-severity/report-severity.entity';
-import { ReportStatus } from './report-status/report-status.entity';
 import { ReportType } from './report-type/report-type.entity';
 import { Service } from 'src/services/services.entity';
 import { User } from 'src/users/users.entity';
+
+// TODO : ANDREW : Do we move these to 'shared'?
+export enum REPORT_STATES {
+    PENDING = 'PENDING',
+    REVIEWING = 'REVIEWING',
+    CANCELLED = 'CANCELLED',
+    CLOSED = 'CLOSED',
+}
 
 @Entity()
 export class Report {
@@ -72,20 +77,20 @@ export class Report {
     @JoinColumn({ name: 'reported_service_id' })
     reportedService: Service;
 
-    @Index ( 'reportStatusIdIndex' )
-    @Column ( { type: 'integer', name: 'report_status_id', nullable: false } )
-    reportStatusId: number;
+    @Column({
+        type: 'varchar',
+        name: 'state',
+        nullable: false,
+        default: REPORT_STATES.PENDING,
+    })
+    state: REPORT_STATES;
 
-    @OneToOne ( () => ReportStatus )
-    @JoinColumn ( { name: 'report_status_id' } )
-    reportStatus: ReportStatus;
+    @Column({ type: 'integer', name: 'assigned_user_id', nullable: true })
+    assignedUserId: number;
 
-    @Column ( { type: 'integer', name: 'report_severity_id', nullable: false } )
-    reportSeverityId: number;
-
-    @OneToOne ( () => ReportSeverity )
-    @JoinColumn ( { name: 'report_severity_id' } )
-    reportSeverity: ReportSeverity;
+    @OneToOne(() => User)
+    @JoinColumn({ name: 'assigned_user_id' })
+    assignedUser: User;
 
     @CreateDateColumn({ type: 'datetime', name: 'created_at', nullable: false, default: 'CURRENT_TIMESTAMP' })
     createdAt: Date;
