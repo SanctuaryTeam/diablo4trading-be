@@ -9,13 +9,14 @@ import {
     Put,
     Query,
 } from '@nestjs/common';
+import { API } from '@sanctuaryteam/shared';
 import { OptionalParseIntPipe } from '../../pipes/optional-parse-int-pipe';
-import { SERVICE_SLOT_STATES, ServiceSlot } from './service-slots.entity';
+import { ServiceSlot } from './service-slots.entity';
 import { SERVICE_SLOT_ERROR_CODES, ServiceSlotsService } from './service-slots.service';
 
 const STATE_TRANSITIONS_MAP = {
-    [SERVICE_SLOT_STATES.PENDING]: [SERVICE_SLOT_STATES.ACCEPTED, SERVICE_SLOT_STATES.REJECTED],
-    [SERVICE_SLOT_STATES.ACCEPTED]: [SERVICE_SLOT_STATES.ENDED],
+    [API.ServiceSlotStates.Pending]: [API.ServiceSlotStates.Accepted, API.ServiceSlotStates.Rejected],
+    [API.ServiceSlotStates.Accepted]: [API.ServiceSlotStates.Ended],
 };
 
 @Controller('service-slots')
@@ -27,14 +28,14 @@ export class ServiceSlotsController {
     async search(
         @Query('clientId', OptionalParseIntPipe) clientId?: number,
         @Query('ownerId', OptionalParseIntPipe) ownerId?: number,
-        @Query('state') state?: SERVICE_SLOT_STATES,
-        @Query('excludeEnded') excludeEnded?: string,
+        @Query('state') state?: API.ServiceSlotStates,
+        @Query('excludeEnded') excludeEnded?: boolean,
         @Query('offset', OptionalParseIntPipe) offset?: number,
         @Query('limit', OptionalParseIntPipe) limit?: number,
     ): Promise<ServiceSlot[]> {
         return await this.serviceSlotsService
             .createQuery()
-            .excludeEnded(excludeEnded === 'true')
+            .excludeEnded(excludeEnded === true)
             .searchByServiceOwner(ownerId)
             .searchBySlotClient(clientId)
             .searchByState(state)
@@ -49,7 +50,7 @@ export class ServiceSlotsController {
     @Put(':id/state/:newState')
     async updateState(
         @Param('id') id: number,
-        @Param('newState') newState: SERVICE_SLOT_STATES,
+        @Param('newState') newState: API.ServiceSlotStates,
     ): Promise<ServiceSlot> {
         const slot = await this.serviceSlotsService.findById(id);
 

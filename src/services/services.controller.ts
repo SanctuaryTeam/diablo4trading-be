@@ -14,9 +14,9 @@ import {
     Request,
     UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { RequestModel } from 'src/auth/request.model';
+import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
 import { USER_ERROR_MESSAGES, UsersService } from '../users/users.service';
 import { ServiceSlot } from './service-slots/service-slots.entity';
@@ -27,6 +27,7 @@ import { SERVICE_ERROR_CODES, ServicesService } from './services.service';
 
 const MAX_SERVICE_COUNT = 3;
 
+@UseGuards(JwtAuthGuard)
 @Controller('services')
 export class ServicesController {
     constructor(
@@ -35,6 +36,7 @@ export class ServicesController {
         private readonly usersService: UsersService,
     ) {}
 
+    @SkipGuards()
     @Get('')
     async search(
         @Query('serverType') serverType?: string,
@@ -61,7 +63,6 @@ export class ServicesController {
     }
 
     @Post('')
-    @UseGuards(JwtAuthGuard)
     async create(@Body() dto: Partial<Service>, @Request() req: RequestModel): Promise<Service> {
         const user = req.user;
 
@@ -134,11 +135,13 @@ export class ServicesController {
         }
     }
 
-    @Post(':id/claim-slot/:userId')
+    @Post(':id/claim-slot')
     async claimSlot(
         @Param('id') id: number,
-        @Param('userId') userId: number,
+        @Request() req: RequestModel,
     ): Promise<ServiceSlot> {
+        const userId = req.user.id;
+
         const existingService = await this.servicesService
             .createQuery()
             .searchById(id)

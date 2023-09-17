@@ -12,6 +12,7 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { API } from '@sanctuaryteam/shared';
+import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { IDiabloItem } from 'src/diablo-items/diablo-item.interface';
 import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
@@ -21,6 +22,7 @@ import { BID_ERROR_CODES, BidCreationData, ItemListingBidsService } from './item
 import { ItemListing } from './item-listing.entity';
 import { ItemListingsService, TradePostCreateData } from './item-listings.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('listings')
 export class ItemListingsController implements OnModuleInit {
     private diabloItemsMock: IDiabloItem[] = [];
@@ -42,8 +44,8 @@ export class ItemListingsController implements OnModuleInit {
         return await this.itemListingsService.createItemAndListing(body);
     }
 
+    @SkipGuards()
     @Get('search')
-    @UseGuards(JwtAuthGuard)
     async search(@Query() query: API.TradeGetSearchQuery): Promise<API.TradeGetSearchResponse> {
         const { serverType } = query;
         if (!Game.ServerType[serverType]) {

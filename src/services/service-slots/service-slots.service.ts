@@ -1,8 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { API } from '@sanctuaryteam/shared';
 import { Not, Repository, SelectQueryBuilder } from 'typeorm';
 import { ServiceResponseException } from '../../common/exceptions';
-import { SERVICE_SLOT_STATES, ServiceSlot } from './service-slots.entity';
+import { ServiceSlot } from './service-slots.entity';
 
 export enum SERVICE_SLOT_ERROR_CODES {
     SLOT_NOT_FOUND = 'SLOT_NOT_FOUND',
@@ -39,7 +40,7 @@ export class ServiceSlotsService {
             where: {
                 clientUserId: data.clientUserId,
                 serviceId: data.serviceId,
-                state: Not(SERVICE_SLOT_STATES.ENDED),
+                state: Not(API.ServiceSlotStates.Ended),
             },
         });
 
@@ -51,15 +52,16 @@ export class ServiceSlotsService {
 
         const serviceSlot = this.serviceSlotRepository.create({
             ...data,
-            state: SERVICE_SLOT_STATES.PENDING,
+            state: API.ServiceSlotStates.Pending,
         });
 
         return await this.serviceSlotRepository.save(serviceSlot);
     }
 
-    async updateServiceSlotState(id: number, state: SERVICE_SLOT_STATES): Promise<ServiceSlot> {
+    async updateServiceSlotState(id: number, state: API.ServiceSlotStates): Promise<ServiceSlot> {
         // Check the validity of the state before proceeding
-        if (!(state in SERVICE_SLOT_STATES)) {
+
+        if (!Object.values(API.ServiceSlotStates).includes(state)) {
             throw new ServiceResponseException(
                 SERVICE_SLOT_ERROR_CODES.INVALID_STATE,
                 `Invalid state "${state}"`,
@@ -84,10 +86,10 @@ export class ServiceSlotsService {
                 throw new ServiceResponseException(SERVICE_SLOT_ERROR_CODES.SLOT_NOT_FOUND, 'Slot not found');
             }
 
-            if (state === SERVICE_SLOT_STATES.ACCEPTED) {
+            if (state === API.ServiceSlotStates.Accepted) {
                 const acceptedSlotsCount = await slotQueryBuilder
                     .where('service_slot.service_id = :serviceId', { serviceId: slot.service.id })
-                    .andWhere('service_slot.state = :state', { state: SERVICE_SLOT_STATES.ACCEPTED })
+                    .andWhere('service_slot.state = :state', { state: API.ServiceSlotStates.Accepted })
                     .getCount();
 
                 if (acceptedSlotsCount >= slot.service.maxAcceptedSlots) {
@@ -101,10 +103,10 @@ export class ServiceSlotsService {
                 // TODO - business logic might be questionable here
                 await slotQueryBuilder
                     .update()
-                    .set({ state: SERVICE_SLOT_STATES.REJECTED })
+                    .set({ state: API.ServiceSlotStates.Rejected })
                     .where('service_slot.client_user_id = :userId', { userId: slot.client.id })
                     .andWhere('service_slot.state IN (:...states)', {
-                        states: [SERVICE_SLOT_STATES.PENDING, SERVICE_SLOT_STATES.ACCEPTED],
+                        states: [API.ServiceSlotStates.Pending, API.ServiceSlotStates.Accepted],
                     })
                     .execute();
             }
@@ -131,7 +133,7 @@ class CustomQueryBuilder {
         if (exclude) {
             this.queryBuilder = this.queryBuilder.andWhere(
                 'service_slot.state != :excludedState',
-                { excludedState: SERVICE_SLOT_STATES.ENDED },
+                { excludedState: API.ServiceSlotStates.Ended },
             );
         }
 
@@ -158,7 +160,7 @@ class CustomQueryBuilder {
         return this;
     }
 
-    searchByState(state: SERVICE_SLOT_STATES): CustomQueryBuilder {
+    searchByState(state: API.ServiceSlotStates): CustomQueryBuilder {
         if (typeof state === 'string') {
             this.queryBuilder = this.queryBuilder.andWhere(
                 'service_slot.state = :state',
