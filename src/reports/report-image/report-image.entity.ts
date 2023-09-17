@@ -3,13 +3,13 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
 } from 'typeorm';
 import { Report } from '../report.entity';
 
 @Entity()
 export class ReportImage {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({ generated: true, update: false })
     id: number;
 
     @Column ( { type: 'integer', name: 'report_id', nullable: false } )

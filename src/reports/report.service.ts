@@ -1,43 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { ServiceResponseException } from 'src/common/exceptions';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { REPORT_STATES, Report } from './report.entity';
-//import { ReportReason } from './report-reason/report-reason.entity';
-//import { ReportType } from './report-type/report-type.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { COMMON_ERROR_CODES, ServiceResponseException } from 'src/common/exceptions';
-import { UsersService } from 'src/users/users.service';
+import { USER_ERROR_CODES, USER_ERROR_MESSAGES, UsersService } from 'src/users/users.service';
 
 export enum REPORT_ERROR_CODES {
-    REPORT_NOT_FOUND = 'SLOT_NOT_FOUND',
+    REPORT_NOT_FOUND = 'REPORT_NOT_FOUND',
     INVALID_STATE = 'INVALID_STATE',
+    SQL_ERROR = 'SQL_ERROR',
 }
+
+export const REPORT_ERROR_MESSAGES = {
+    REPORT_NOT_FOUND: (reportId: number) => `Report with ID ${reportId} not found`,
+    INVALID_STATE: (state: REPORT_STATES) => `Invalid state ${state}`,
+    INVALID_STATE_TRANSITION: (state: REPORT_STATES) => `Invalid state transition "${state}"`,
+};
 
 @Injectable()
 export class ReportService {
+    private readonly logger = new Logger(ReportService.name);
 
     private readonly STATE_TRANSITIONS_MAP = {
-        [REPORT_STATES.PENDING]: [REPORT_STATES.REVIEWING, REPORT_STATES.CANCELLED],
-        [REPORT_STATES.REVIEWING]: [REPORT_STATES.CANCELLED, REPORT_STATES.CLOSED],
+        // They should be able to 'transition' to themselves, or to another valid state
+        [REPORT_STATES.PENDING]: [REPORT_STATES.PENDING, REPORT_STATES.REVIEWING, REPORT_STATES.CANCELLED],
+        [REPORT_STATES.REVIEWING]: [REPORT_STATES.REVIEWING, REPORT_STATES.CANCELLED, REPORT_STATES.CLOSED],
     };
 
     private readonly DEFAULT_OFFSET: number = 0;
     private readonly DEFAULT_LIMIT: number = 25;
 
     constructor(
-
-        // TODO : ANDREW : Remove if this isn't needed
-        //@InjectRepository(ReportType, 'memory')
-        //private readonly reportTypeRepository: Repository<ReportType>,
-
-        //@InjectRepository(ReportReason, 'memory')
-        //private readonly reportReasonRepository: Repository<ReportReason>,
-
         @InjectRepository(Report)
         private readonly reportRepository: Repository<Report>,
 
-        // TODO : ANDREW : Should I change this?
+        // TODO : ANDREW : Should I move this to the controller?
         private readonly userService: UsersService,
-
     ) { }
 
     createQuery() {
@@ -46,104 +44,160 @@ export class ReportService {
         );
     }
 
-    // Sample Documentation
-    /*
-     * Find (One) Report by Id
-     *
-     * @example
-     * `let report = findOneByReportId(1234);`
-     * 
-     * @param id - 'id' from an already existing report
-    */
-
     //#region - CREATE
 
-    // TODO : ANDREW : Add documentation
+    // TODO : ANDREW : When Dto objects are created, update these examples
+
+    /*
+     * Create a Report
+     *
+     * @example
+     * `
+     * let report = new Report(); // Example
+     * let reportResult = createReport(report);
+     * `
+     * @param report - Report to add to the Database (with required fields)
+    */
     async createReport(report: Partial<Report>): Promise<Report> {
-        this.reportRepository.create(report);
-        return await this.reportRepository.save(report);
+
+        try {
+            // HACK : Removing the ability to self create the 'id'
+            // This causes the 'auto-increment' to skip to whatever was passed in
+            // Ex. (Before Insert)
+            // NEXTVAL: 10 (then 11, 12, 13, etc...)
+            //
+            //     (Request -> Insert into table)
+            // id: 123 // Valid, non existing Id
+            //
+            //     (After Insert)
+            // NEXTVAL: 124 (then 125, 126, 127, etc...)
+            // 
+            // There might be a better way to do this without causing another query to check the next val
+            if (report?.id) report.id = null;
+
+            const createdReport = this.reportRepository.create(report);
+            return await this.reportRepository.save(createdReport);
+        } catch (error) {
+
+            await this.handleError(new ServiceResponseException(
+                REPORT_ERROR_CODES.SQL_ERROR,
+                error.message,
+            ));
+        }
     }
 
     //#endregion - CREATE
 
     //#region - READ
 
-    // TODO : ANDREW : Add documentation
-    async findOneByReportId(id: number): Promise<Report> {
+    /*
+     * Find (One) Report by Id
+     *
+     * @example
+     * `let report = findOneByReportId(1234, true);`
+     * 
+     * @param id - 'id' from an already existing report.
+     * @param excludeDeleted - (Default: true) true to exclude (soft) 'deleted' reports, false to include.
+    */
+    async findOneByReportId(id: number, excludeDeleted = true): Promise<Report> {
 
-        const report = this.createQuery()
+        const report = await this.createQuery()
             .searchByReportId(id)
-            .excludeDeleted()
+            .excludeDeleted(excludeDeleted)
             .includeFull()
             .getOne();
 
-        if (!report) {
-            throw new ServiceResponseException(
+        if (!report || report == null) {
+            await this.handleError(new ServiceResponseException(
                 REPORT_ERROR_CODES.REPORT_NOT_FOUND,
-                `Report with ID ${id} not found`,
-            );
+                REPORT_ERROR_MESSAGES.REPORT_NOT_FOUND(id),
+            ));
         }
 
         return report;
     }
 
-    // TODO : ANDREW : Add documentation
-    async findAllByUser(userId: number): Promise<Report[]> {
+    /*
+     * Find all the reports by the 'reportedByUser'
+     *
+     * @example
+     * `let reports = findAllByUser(1234, true);`
+     * 
+     * @param userId - 'userId' from an already existing user.
+     * @param excludeDeleted - (Default: true) true to exclude (soft) 'deleted' reports, false to include.
+    */
+    async findAllByUser(userId: number, excludeDeleted = true): Promise<Report[]> {
 
         const user = await this.userService.findById(userId);
 
         if (!user) {
-            throw new ServiceResponseException(
-                COMMON_ERROR_CODES.NOT_FOUND,
-                `User with ID ${userId} not found`,
-            );
+            await this.handleError(new ServiceResponseException(
+                USER_ERROR_CODES.USER_NOT_FOUND,
+                USER_ERROR_MESSAGES.USER_NOT_FOUND(userId),
+            ));
         }
 
         // Limiting this with defaults for now to prevent really long query times
         // As more users create more reports, we should include this as a parameter
         return this.createQuery()
             .searchByReportedByUserId(userId)
-            .excludeDeleted()
+            .excludeDeleted(excludeDeleted)
             .includeFull()
             .paginate(this.DEFAULT_OFFSET, this.DEFAULT_LIMIT)
-            .orderBy('createdAt', 'DESC')
+            .orderBy('id', 'DESC')
             .getMany();
     }
 
-    // TODO : ANDREW : Add documentation
-    async findAllByReportedUser(userId: number): Promise<Report[]> {
+    /*
+     * Find all the reports by the 'reportedUser'
+     *
+     * @example
+     * `let reports = findAllByReportedUser(1234, true);`
+     * 
+     * @param userId - 'userId' from an already existing user.
+     * @param excludeDeleted - (Default: true) true to exclude (soft) 'deleted' reports, false to include.
+    */
+    async findAllByReportedUser(userId: number, excludeDeleted = true): Promise<Report[]> {
 
         const user = await this.userService.findById(userId);
 
         if (!user) {
-            throw new ServiceResponseException(
-                COMMON_ERROR_CODES.NOT_FOUND,
-                `User with ID ${userId} not found`,
-            );
+            await this.handleError(new ServiceResponseException(
+                USER_ERROR_CODES.USER_NOT_FOUND,
+                USER_ERROR_MESSAGES.USER_NOT_FOUND(userId),
+            ));
         }
 
         // Limiting this with defaults for now to prevent really long query times
         // As more users create more reports, we should include this as a parameter
         return this.createQuery()
             .searchByReportedUserId(userId)
-            .excludeDeleted()
+            .excludeDeleted(excludeDeleted)
             .includeFull()
             .paginate(this.DEFAULT_OFFSET, this.DEFAULT_LIMIT)
-            .orderBy('createdAt', 'DESC')
+            .orderBy('id', 'DESC')
             .getMany();
     }
 
-    // TODO : ANDREW : Add documentation
-    async findAllOpenReports(): Promise<Report[]> {
+    /*
+     * Find ALL the reports
+     *
+     * @example
+     * `let reports = findAllOpenReports(1234, true);`
+     * 
+     * @param excludeDeleted - (Default: true) true to exclude (soft) 'deleted' reports, false to include.
+     * @param excludeClosed - (Default: true) true to exclude 'closed' reports, false to include. (See: REPORT_STATES.CLOSED)
+    */
+    async findAllOpenReports(excludeDeleted = true, excludeClosed = true): Promise<Report[]> {
 
         // Limiting this with defaults for now to prevent really long query times
         // As more users create more reports, we should include this as a parameter
         return this.createQuery()
-            .excludeDeleted()
-            .excludeClosed()
+            .excludeDeleted(excludeDeleted)
+            .excludeClosed(excludeClosed)
             .includeFull()
             .paginate(this.DEFAULT_OFFSET, this.DEFAULT_LIMIT)
-            .orderBy('createdAt', 'DESC')
+            .orderBy('id', 'DESC')
             .getMany();
     }
 
@@ -151,30 +205,45 @@ export class ReportService {
 
     //#region - UPDATE
 
-    // TODO : ANDREW : Add documentation
+    // TODO : ANDREW : After testing all these scenarios, may want to add more checks/error logging
+
+    /*
+     * Update a Report with the given Id, and the Partial<Report> values
+     *
+     * @example
+     * `
+     * let report = new Report(); // Example
+     * let reportResult = updateReport(1234, report);
+     * `
+     * @usageNotes
+     * The 'state' must be a valid state and be a valid transition state (See: STATE_TRANSITIONS_MAP)
+     * 
+     * @param id - 'id' from an already existing report.
+     * @param dto - Report (values) to update the existing report with
+    */
     async updateReport(id: number, dto: Partial<Report>): Promise<Report> {
 
-        const report = await this.findOneByReportId(id);
+        const report = await this.reportRepository.findOneBy({ id });
 
         if (!report) {
-            throw new ServiceResponseException(
+            await this.handleError(new ServiceResponseException(
                 REPORT_ERROR_CODES.REPORT_NOT_FOUND,
-                `Report with ID ${id} not found`,
-            );
+                REPORT_ERROR_MESSAGES.REPORT_NOT_FOUND(id),
+            ));
         }
 
         if (!(dto.state in REPORT_STATES)) {
-            throw new ServiceResponseException(
+            await this.handleError(new ServiceResponseException(
                 REPORT_ERROR_CODES.INVALID_STATE,
-                `Invalid state "${dto.state}"`,
-            );
+                REPORT_ERROR_MESSAGES.INVALID_STATE(dto.state),
+            ));
         }
 
         if (!this.STATE_TRANSITIONS_MAP[report.state]?.includes(dto.state)) {
-            throw new ServiceResponseException(
+            await this.handleError(new ServiceResponseException(
                 REPORT_ERROR_CODES.INVALID_STATE,
-                `Invalid state transition "${dto.state}"`,
-            );
+                REPORT_ERROR_MESSAGES.INVALID_STATE_TRANSITION(dto.state),
+            ));
         }
 
         // Currently only checking the 'state' is valid
@@ -188,53 +257,87 @@ export class ReportService {
 
     //#region - DELETE
 
-    // TODO : ANDREW : Add documentation - (For all functions)
+    /*
+     * (Hard) Delete a report by a given ID - NOT REVERSIBLE
+     *
+     * @example
+     * `deleteReport(1234);`
+     * 
+     * @param id - 'id' from an already existing report.
+    */
     async deleteReport(id: number): Promise<void> {
 
-        const report = await this.findOneByReportId(id);
+        const report = await this.reportRepository.findOneBy({ id });
 
         if (!report) {
-            throw new ServiceResponseException(
+            await this.handleError(new ServiceResponseException(
                 REPORT_ERROR_CODES.REPORT_NOT_FOUND,
-                `Report with ID ${id} not found`,
-            );
+                REPORT_ERROR_MESSAGES.REPORT_NOT_FOUND(id),
+            ));
         }
 
         await this.reportRepository.delete(id);
     }
 
+    /*
+     * (Soft) Delete a report by a given ID
+     *
+     * @example
+     * `softDeleteReport(1234);`
+     * 
+     * @usageNotes
+     * This sets the 'deleted' field on the Report and can be reversed. (See: undoSoftDeleteReport)
+     * 
+     * @param id - 'id' from an already existing report.
+    */
     async softDeleteReport(id: number): Promise<void> {
 
-        const report = await this.findOneByReportId(id);
+        const report = await this.reportRepository.findOneBy({ id });
 
         if (!report) {
-            throw new ServiceResponseException(
+            await this.handleError(new ServiceResponseException(
                 REPORT_ERROR_CODES.REPORT_NOT_FOUND,
-                `Report with ID ${id} not found`,
-            );
+                REPORT_ERROR_MESSAGES.REPORT_NOT_FOUND(id),
+            ));
         }
 
         await this.reportRepository.update(id, { deleted: true });
     }
 
+    /*
+     * Undo (Soft) Delete a report by a given ID
+     *
+     * @example
+     * `undoSoftDeleteReport(1234);`
+     * 
+     * @usageNotes
+     * This sets the 'deleted' field on the Report and can be reversed. (See: softDeleteReport)
+     * 
+     * @param id - 'id' from an already existing report.
+    */
     async undoSoftDeleteReport(id: number): Promise<void> {
 
-        const report = await this.findOneByReportId(id);
+        const report = await this.reportRepository.findOneBy({ id });
 
         if (!report) {
-            throw new ServiceResponseException(
+            await this.handleError(new ServiceResponseException(
                 REPORT_ERROR_CODES.REPORT_NOT_FOUND,
-                `Report with ID ${id} not found`,
-            );
+                REPORT_ERROR_MESSAGES.REPORT_NOT_FOUND(id),
+            ));
         }
 
         await this.reportRepository.update(id, { deleted: false });
     }
 
     //#endregion - DELETE
+
+    // TODO : Anyone : Might want to make a Base/Generic service to handle errors
+    private async handleError(error: Error) {
+        this.logger.error(error, error.stack);
+        throw error;
+    }
 }
 
-// TODO : ANDREW : Add documentation for all functions
 class CustomQueryBuilder {
     private queryBuilder: SelectQueryBuilder<Report>;
 
@@ -266,19 +369,23 @@ class CustomQueryBuilder {
         return this;
     }
 
-    excludeClosed(): CustomQueryBuilder {
-        this.queryBuilder = this.queryBuilder.andWhere(
-            'report.state != :state',
-            { state: REPORT_STATES.CLOSED },
-        );
+    excludeClosed(exclude = true): CustomQueryBuilder {
+        if (exclude) {
+            this.queryBuilder = this.queryBuilder.andWhere(
+                'report.state != :state',
+                { state: REPORT_STATES.CLOSED },
+            );
+        }
         return this;
     }
 
-    excludeDeleted(): CustomQueryBuilder {
-        this.queryBuilder = this.queryBuilder.andWhere(
-            'report.deleted != :deleted',
-            { deleted: false },
-        );
+    excludeDeleted(exclude = true): CustomQueryBuilder {
+        if (exclude) {
+            this.queryBuilder = this.queryBuilder.andWhere(
+                'report.deleted != :exclude',
+                { exclude }
+            );
+        }
         return this;
     }
 
@@ -299,6 +406,7 @@ class CustomQueryBuilder {
             .includeReportedDiabloItem()
             .includeReportedService()
             .includeAssignedUser()
+            .includeUpdatedByUser()
     }
 
     includeReportType(): CustomQueryBuilder {
@@ -312,12 +420,12 @@ class CustomQueryBuilder {
     }
 
     includeReportedByUser(): CustomQueryBuilder {
-        this.queryBuilder = this.queryBuilder.leftJoinAndSelect('report.reportedByUser', 'user');
+        this.queryBuilder = this.queryBuilder.leftJoinAndSelect('report.reportedByUser', 'user1');
         return this;
     }
 
     includeReportedUser(): CustomQueryBuilder {
-        this.queryBuilder = this.queryBuilder.leftJoinAndSelect('report.reportedUser', 'user');
+        this.queryBuilder = this.queryBuilder.leftJoinAndSelect('report.reportedUser', 'user2');
         return this;
     }
 
@@ -332,7 +440,12 @@ class CustomQueryBuilder {
     }
 
     includeAssignedUser(): CustomQueryBuilder {
-        this.queryBuilder = this.queryBuilder.leftJoinAndSelect('report.assignedUser', 'user');
+        this.queryBuilder = this.queryBuilder.leftJoinAndSelect('report.assignedUser', 'user3');
+        return this;
+    }
+
+    includeUpdatedByUser(): CustomQueryBuilder {
+        this.queryBuilder = this.queryBuilder.leftJoinAndSelect('report.updatedByUser', 'user4');
         return this;
     }
 

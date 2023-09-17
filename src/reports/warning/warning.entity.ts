@@ -4,14 +4,15 @@ import {
     JoinColumn,
     ManyToOne,
     OneToOne,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
 } from 'typeorm';
+
 import { Report } from '../report.entity';
 import { User } from 'src/users/users.entity';
 
 @Entity()
 export class Warning {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({ generated: true, update: false })
     id: number;
 
     @Column({ type: 'integer', name: 'warning_user_id', nullable: false })

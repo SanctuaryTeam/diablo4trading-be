@@ -18,7 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { RequestModel } from 'src/auth/request.model';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
-import { UsersService } from '../users/users.service';
+import { USER_ERROR_MESSAGES, UsersService } from '../users/users.service';
 import { ServiceSlot } from './service-slots/service-slots.entity';
 import { ServiceSlotsService } from './service-slots/service-slots.service';
 import { ServiceDto } from './service.dto';
@@ -152,7 +152,7 @@ export class ServicesController {
         const user = await this.usersService.findById(userId);
 
         if (!user) {
-            throw new NotFoundException(`User with ID ${userId} not found`);
+            throw new NotFoundException(USER_ERROR_MESSAGES.USER_NOT_FOUND(userId));
         }
 
         // Creating a new ServiceSlot

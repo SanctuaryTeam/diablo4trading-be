@@ -80,7 +80,7 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
                         onUpdate: 'CURRENT_TIMESTAMP',
                     },
                     {
-                        name: 'updated_by',
+                        name: 'updated_by_user_id',
                         type: 'integer',
                         isNullable: false,
                     },
@@ -167,12 +167,12 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
         await queryRunner.createForeignKey(
             'report',
             new TableForeignKey({
-                columnNames: ['updated_by'],
+                columnNames: ['updated_by_user_id'],
                 referencedColumnNames: ['id'],
                 referencedTableName: 'user',
                 onDelete: 'CASCADE',
             }),
-        );
+        )
 
         await queryRunner.createIndex(
             'report',
@@ -196,7 +196,7 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
                     fk.columnNames.indexOf('reported_diablo_item_id') !== -1 ||
                     fk.columnNames.indexOf('reported_service_id') !== -1 ||
                     fk.columnNames.indexOf('assigned_user_id') !== -1 ||
-                    fk.columnNames.indexOf('updated_by') !== -1
+                    fk.columnNames.indexOf('updated_by_user_id') !== -1
             );
             for (const fk of foreignKeys) {
                 await queryRunner.dropForeignKey('report', fk);

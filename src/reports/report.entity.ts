@@ -5,7 +5,7 @@ import {
     JoinColumn,
     ManyToOne,
     OneToOne,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
@@ -25,7 +25,7 @@ export enum REPORT_STATES {
 
 @Entity()
 export class Report {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({ generated: true, update: false })
     id: number;
 
     @Column ( { type: 'integer', name: 'report_type_id', nullable: false } )
@@ -42,7 +42,8 @@ export class Report {
     @JoinColumn ( { name: 'report_reason_id' } )
     reportReason: ReportReason;
 
-    @Column({ type: 'varchar', length: 500, nullable: false, default: '' })
+    // This is NonNullable to make it harder to just spam reports (without filling out a description)
+    @Column({ type: 'varchar', length: 500, nullable: false })
     reportDescription: string;
 
     @Column({ type: 'integer', name: 'reported_by_user_id', nullable: false })
@@ -77,6 +78,7 @@ export class Report {
     @JoinColumn({ name: 'reported_service_id' })
     reportedService: Service;
 
+    // TODO : ANDREW : When creating the 'CreateDto', don't include these
     @Column({
         type: 'varchar',
         name: 'state',
@@ -92,16 +94,26 @@ export class Report {
     @JoinColumn({ name: 'assigned_user_id' })
     assignedUser: User;
 
-    @CreateDateColumn({ type: 'datetime', name: 'created_at', nullable: false, default: 'CURRENT_TIMESTAMP' })
+    // TODO : ANDREW : When creating the 'CreateDto' and 'UpdateDto', don't include these
+    // With Date value(s), numbers are valid and strings don't get converted well
+    // We likely want to not include this on the 'dto' and let the default value always get run
+    @CreateDateColumn({ type: 'datetime', name: 'created_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
     
-    @UpdateDateColumn({ type: 'datetime', name: 'updated_at', nullable: false, default: 'CURRENT_TIMESTAMP' })
+    // TODO : ANDREW : When creating the 'CreateDto' and 'UpdateDto', don't include these
+    // With Date value(s), numbers are valid and strings don't get converted well
+    // We likely want to not include this on the 'dto' and let the default value always get run
+    @UpdateDateColumn({ type: 'datetime', name: 'updated_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
     
-    @ManyToOne(() => User)
-    @JoinColumn({ name: 'updated_by' })
-    updatedBy: string;
+    @Column({ type: 'integer', name: 'updated_by_user_id', nullable: false })
+    updatedByUserId: number;
 
+    @OneToOne(() => User)
+    @JoinColumn({ name: 'updated_by_user_id' })
+    updatedByUser: User;
+
+    // TODO : ANDREW : When creating the 'CreateDto' and 'UpdateDto', don't include these
     @Column({ type: 'boolean', name: 'deleted', default: false })
     deleted: boolean;
 }

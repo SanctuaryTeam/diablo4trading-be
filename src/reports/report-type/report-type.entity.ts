@@ -1,8 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class ReportType {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({ generated: true, update: false })
     id: number;
 
     @Column({ type: 'varchar', name: 'type_description', length: '100', nullable: false })

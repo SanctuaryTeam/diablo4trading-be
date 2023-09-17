@@ -4,6 +4,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
 
+export enum USER_ERROR_CODES {
+    USER_NOT_FOUND = 'USER_NOT_FOUND',
+}
+
+export const USER_ERROR_MESSAGES = {
+    USER_NOT_FOUND: (userId: number) =>
+        `User with ID ${userId} not found`,
+};
+
 @Injectable()
 export class UsersService {
     constructor(

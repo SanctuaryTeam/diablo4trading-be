@@ -3,13 +3,13 @@ import {
     Entity,
     JoinColumn,
     OneToOne,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
 } from 'typeorm';
 import { ReportType } from '../report-type/report-type.entity';
 
 @Entity()
 export class ReportReason {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn({ generated: true, update: false })
     id: number;
 
     @Column ( { type: 'integer', name: 'report_type_id', nullable: false } )
