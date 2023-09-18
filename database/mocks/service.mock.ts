@@ -3,18 +3,18 @@
 import { Game } from '@diablosnaps/common';
 import { faker } from '@faker-js/faker';
 import { API } from '@sanctuaryteam/shared';
-import { IUser } from 'src/users/user.interface';
-import { IService } from '../../src/services/service.interface';
+import { Service } from 'src/services/services.entity';
+import { User } from 'src/users/users.entity';
 import { GenerateMock } from './mock.interface';
 
 const generateRandomTags = (): number =>
     Object.values(API.TAGS).reduce((result, tag) => faker.datatype.boolean() ? result |= tag : result);
 
-export const generateMock: GenerateMock<IService> = (count: number, users: IUser[]) => {
-    const services: Partial<IService>[] = [];
+export const generateMock: GenerateMock<Service> = (count: number, users: User[]) => {
+    const services: Partial<Service>[] = [];
 
     for (let i = 0; i < count; i++) {
-        const service: Partial<IService> = {
+        const service: Partial<Service> = {
             realmType: faker.helpers.arrayElement(Object.values(Game.ServerType)),
             title: faker.commerce.productName(),
             content: faker.commerce.productDescription(),
