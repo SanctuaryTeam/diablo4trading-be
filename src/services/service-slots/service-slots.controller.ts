@@ -55,7 +55,7 @@ export class ServiceSlotsController {
             .paginate(offset, limit)
             .orderBy('createdAt', 'DESC')
             .getMany()
-            .then((slots) => slots.map(slot => serviceSlotDtoFromEntity(slot)));
+            .then((slots) => slots.map(slot => serviceSlotDtoFromEntity(slot, { hideDiscriminator: true })));
     }
 
     @Put(':id/state/:newState')

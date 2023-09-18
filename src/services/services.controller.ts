@@ -75,7 +75,9 @@ export class ServicesController {
 
         dto.user = req.user;
 
-        return await this.servicesService.createService(dto).then(service => serviceDtoFromEntity(service));
+        return await this.servicesService.createService(dto).then(service =>
+            serviceDtoFromEntity(service, { hideDiscriminator: true })
+        );
     }
 
     @Put(':id')
@@ -95,7 +97,7 @@ export class ServicesController {
 
         try {
             return await this.servicesService.updateService(id, updateDto).then(service =>
-                serviceDtoFromEntity(service)
+                serviceDtoFromEntity(service, { hideDiscriminator: true })
             );
         } catch (error) {
             throw new HttpException(
@@ -163,7 +165,7 @@ export class ServicesController {
         };
 
         return await this.serviceSlotsService.createServiceSlot(newSlotData).then(serviceSlot =>
-            serviceSlotDtoFromEntity(serviceSlot)
+            serviceSlotDtoFromEntity(serviceSlot, { hideDiscriminator: true })
         );
     }
 }
