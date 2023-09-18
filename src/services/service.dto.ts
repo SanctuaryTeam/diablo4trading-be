@@ -1,5 +1,5 @@
-import { UserDto, fromEntity as userDtoFromEntity } from '../users/user.dto';
-import { ServiceSlotDto, fromEntity as serviceSlotDtoFromEntity } from './service-slots/service-slots.dto'; // Update this path as needed
+import { fromEntity as userDtoFromEntity, UserDto } from '../users/user.dto';
+import { fromEntity as serviceSlotDtoFromEntity, ServiceSlotDto } from './service-slots/service-slots.dto'; // Update this path as needed
 import { Service } from './services.entity';
 
 export interface ServiceDto {
@@ -19,17 +19,35 @@ export interface ServiceDto {
     deleted: boolean;
 }
 
-export const fromEntity = (entity: Service): ServiceDto => {
+interface FromEntityOptions {
+    hideDiscriminator?: boolean;
+}
+
+export const fromEntity = (entity: Service, options: FromEntityOptions = {}): ServiceDto => {
     const {
-        id, realmType, title, content, userId, tags, 
-        maxAcceptedSlots, slots, bumpedAt, createdAt, 
-        updatedAt, updatedBy, deleted, user
+        id,
+        realmType,
+        title,
+        content,
+        userId,
+        tags,
+        maxAcceptedSlots,
+        slots,
+        bumpedAt,
+        createdAt,
+        updatedAt,
+        updatedBy,
+        deleted,
+        user,
     } = entity;
 
-    const userDto = user ? userDtoFromEntity(user) : undefined;
+    const { hideDiscriminator } = options;
+
+    const userDto = user ? userDtoFromEntity(user, { hideDiscriminator }) : undefined;
     const serviceSlotsDto: ServiceSlotDto[] = [];
 
-    Array.isArray(slots) && slots.forEach(slot => serviceSlotsDto.push(serviceSlotDtoFromEntity(slot)))
+    Array.isArray(slots)
+        && slots.forEach(slot => serviceSlotsDto.push(serviceSlotDtoFromEntity(slot, { hideDiscriminator })));
 
     return {
         id,
@@ -45,6 +63,6 @@ export const fromEntity = (entity: Service): ServiceDto => {
         updatedAt,
         updatedBy,
         deleted,
-        user: userDto
+        user: userDto,
     };
-}
+};

@@ -13,12 +13,12 @@ import {
 } from '@nestjs/common';
 import { API } from '@sanctuaryteam/shared';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { RequestModel } from 'src/auth/request.model';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { OptionalParseIntPipe } from '../../pipes/optional-parse-int-pipe';
-import { ServiceSlotDto, fromEntity as serviceSlotDtoFromEntity } from './service-slots.dto';
+import { fromEntity as serviceSlotDtoFromEntity, ServiceSlotDto } from './service-slots.dto';
 import { ServiceSlot } from './service-slots.entity';
 import { SERVICE_SLOT_ERROR_CODES, ServiceSlotsService } from './service-slots.service';
-import { RequestModel } from 'src/auth/request.model';
 
 const STATE_TRANSITIONS_MAP = {
     [API.ServiceSlotStates.Pending]: [API.ServiceSlotStates.Accepted, API.ServiceSlotStates.Rejected],
@@ -43,8 +43,8 @@ export class ServiceSlotsController {
     ): Promise<ServiceSlotDto[]> {
         const reqUserId = req.user?.id;
         let serviceSlotQuery = this.serviceSlotsService.createQuery();
-        if (reqUserId === userId) {            
-            serviceSlotQuery = serviceSlotQuery.searchByUser(userId)
+        if (reqUserId === userId) {
+            serviceSlotQuery = serviceSlotQuery.searchByUser(userId);
         }
         return await serviceSlotQuery
             .excludeEnded(excludeEnded === true)

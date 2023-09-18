@@ -16,7 +16,7 @@ interface FromEntityOptions {
 
 const formatBattleNetTag = (tag: string, hideDiscriminator?: boolean): string => {
     return hideDiscriminator ? tag.split('#')[0] : tag;
-}
+};
 
 export const fromEntity = (entity: User, options: FromEntityOptions = {}): UserDto => {
     const { hideDiscriminator } = options;
@@ -30,4 +30,4 @@ export const fromEntity = (entity: User, options: FromEntityOptions = {}): UserD
         vouchScore,
         vouchRating,
     };
-}
+};

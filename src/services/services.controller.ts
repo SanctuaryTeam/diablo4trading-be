@@ -19,9 +19,9 @@ import { RequestModel } from 'src/auth/request.model';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
 import { UsersService } from '../users/users.service';
-import { ServiceSlot } from './service-slots/service-slots.entity';
+import { fromEntity as serviceSlotDtoFromEntity, ServiceSlotDto } from './service-slots/service-slots.dto';
 import { ServiceSlotsService } from './service-slots/service-slots.service';
-import { ServiceDto, fromEntity as serviceDtoFromEntity } from './service.dto';
+import { fromEntity as serviceDtoFromEntity, ServiceDto } from './service.dto';
 import { Service } from './services.entity';
 import { SERVICE_ERROR_CODES, ServicesService } from './services.service';
 
@@ -55,15 +55,16 @@ export class ServicesController {
             .searchByTags(tags)
             .searchByUserId(userId)
             .searchByDeleted(deleted === true)
+            // Need to include the serviceSlotsOpen and serviceSlotsAvailable
             // .includeSlots()
             .paginate(offset, limit)
             .orderBy('bumpedAt', 'DESC')
             .getMany()
-            .then((services) => services.map(service => serviceDtoFromEntity(service)));
+            .then((services) => services.map(service => serviceDtoFromEntity(service, { hideDiscriminator: true })));
     }
 
     @Post('')
-    async create(@Body() dto: Partial<Service>, @Request() req: RequestModel): Promise<Service> {
+    async create(@Body() dto: Partial<Service>, @Request() req: RequestModel): Promise<ServiceDto> {
         const user = req.user;
 
         const notDeletedServicesCount = await this.servicesService.countNotDeletedServices(user);
@@ -74,14 +75,14 @@ export class ServicesController {
 
         dto.user = req.user;
 
-        return await this.servicesService.createService(dto);
+        return await this.servicesService.createService(dto).then(service => serviceDtoFromEntity(service));
     }
 
     @Put(':id')
     async update(
         @Param('id') id: number,
         @Body() updateDto: Partial<Service>,
-    ): Promise<Service> {
+    ): Promise<ServiceDto> {
         const existingService = await this.servicesService
             .createQuery()
             .includeSlots()
@@ -93,7 +94,9 @@ export class ServicesController {
         }
 
         try {
-            return await this.servicesService.updateService(id, updateDto);
+            return await this.servicesService.updateService(id, updateDto).then(service =>
+                serviceDtoFromEntity(service)
+            );
         } catch (error) {
             throw new HttpException(
                 error?.message || 'Unknown error',
@@ -139,7 +142,7 @@ export class ServicesController {
     async claimSlot(
         @Param('id') id: number,
         @Request() req: RequestModel,
-    ): Promise<ServiceSlot> {
+    ): Promise<ServiceSlotDto> {
         const userId = req.user.id;
 
         const existingService = await this.servicesService
@@ -159,6 +162,8 @@ export class ServicesController {
             serviceOwnerUserId: existingService.userId,
         };
 
-        return await this.serviceSlotsService.createServiceSlot(newSlotData);
+        return await this.serviceSlotsService.createServiceSlot(newSlotData).then(serviceSlot =>
+            serviceSlotDtoFromEntity(serviceSlot)
+        );
     }
 }

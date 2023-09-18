@@ -1,6 +1,6 @@
 import { API } from '@sanctuaryteam/shared';
-import { UserDto, fromEntity as userDtoFromEntity } from '../../users/user.dto';
-import { ServiceDto, fromEntity as serviceDtoFromEntity } from '../service.dto';
+import { fromEntity as userDtoFromEntity, UserDto } from '../../users/user.dto';
+import { fromEntity as serviceDtoFromEntity, ServiceDto } from '../service.dto';
 import { ServiceSlot } from './service-slots.entity';
 
 export interface ServiceSlotDto {
@@ -15,15 +15,28 @@ export interface ServiceSlotDto {
     updatedAt: Date;
 }
 
-export const fromEntity = (entity: ServiceSlot): ServiceSlotDto => {
+interface FromEntityOptions {
+    hideDiscriminator?: boolean;
+}
+
+export const fromEntity = (entity: ServiceSlot, options: FromEntityOptions = {}): ServiceSlotDto => {
     const {
-        id, state, service, serviceId, serviceOwner, serviceOwnerUserId,
-        client, clientUserId, updatedAt
+        id,
+        state,
+        service,
+        serviceId,
+        serviceOwner,
+        serviceOwnerUserId,
+        client,
+        clientUserId,
+        updatedAt,
     } = entity;
 
-    const clientDto = client ? userDtoFromEntity(client, {hideDiscriminator: true}) : undefined;
-    const serviceOwnerDto = serviceOwner ? userDtoFromEntity(serviceOwner, {hideDiscriminator: true}) : undefined;
-    const serviceDto = service ? serviceDtoFromEntity(service) : undefined;
+    const { hideDiscriminator } = options;
+
+    const clientDto = client ? userDtoFromEntity(client, { hideDiscriminator }) : undefined;
+    const serviceOwnerDto = serviceOwner ? userDtoFromEntity(serviceOwner, { hideDiscriminator }) : undefined;
+    const serviceDto = service ? serviceDtoFromEntity(service, { hideDiscriminator }) : undefined;
 
     return {
         id,
@@ -36,4 +49,4 @@ export const fromEntity = (entity: ServiceSlot): ServiceSlotDto => {
         service: serviceDto,
         serviceId,
     };
-}
+};
