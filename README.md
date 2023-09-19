@@ -24,6 +24,13 @@ To get your application up and running:
 - packages will be installed and application will start
 - Access the Application: Once the containers are up and running, you can access the application in your browser using the URL: http://localhost:3000.
 
+### Running Commands Inside the Container
+
+**docker compose run**: to run commands inside of the container.
+```bash
+docker compose run backend-api <command>
+```
+
 ## SQLite Build and Run Migrations:
 For development, the application uses SQLite as the database.
 
