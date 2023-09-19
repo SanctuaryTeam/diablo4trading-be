@@ -15,11 +15,11 @@ To get your application up and running:
 - Ensure you have both Docker and Docker Compose installed.
 - Navigate to `~/sanctuaryteam/diablo4trading-be` containing your docker-compose.yml file.
 ```bash
-    cd ~/sanctuaryteam/diablo4trading-be
+ cd ~/sanctuaryteam/diablo4trading-be
 ```
 -  Run the following command: 
 ```bash
-   docker compose up
+ docker compose up
 ```
 - packages will be installed and application will start
 - Access the Application: Once the containers are up and running, you can access the application in your browser using the URL: http://localhost:3000.
@@ -28,7 +28,7 @@ To get your application up and running:
 
 **docker compose run**: to run commands inside of the container.
 ```bash
-docker compose run backend-api <command>
+ docker compose run backend-api <command>
 ```
 
 ## SQLite Build and Run Migrations:
@@ -84,18 +84,20 @@ Seeding allows you to populate your database with initial data. This can be usef
 
 Before running the development server, you might want to seed your database with some test data.
 ```bash
-    yarn seed
-    yarn start:dev
+ yarn seed -seeder UserSeeder,ServiceSeeder,ServiceSlotSeeder
+ yarn start:dev
 ```
+
+_Note_: **CAUTION** when using seed scripts, especially in production environments. These scripts can replace existing data, potentially leading to data loss or inconsistencies.
 
 **Seeding For Tests**
 
 Resetting Data Before Tests: If you have end-to-end tests or integration tests, you might want to ensure a consistent database state before running them. To reset and seed your database:
 
 ```bash
-yarn migrate:run
-yarn seed
-yarn test:e2e
+ yarn migrate:run
+ yarn seed -seeder UserSeeder,ServiceSeeder,ServiceSlotSeeder
+ yarn test:e2e
 ```
 
 ## Testing
