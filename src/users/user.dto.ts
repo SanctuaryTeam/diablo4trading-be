@@ -18,6 +18,7 @@ const formatBattleNetTag = (tag: string, hideDiscriminator?: boolean): string =>
     return hideDiscriminator ? tag.split('#')[0] : tag;
 };
 
+                                                    // TODO: Replace with API.UserDto when shared is updated to 0.2.7
 export const fromEntity = (entity: User, options: FromEntityOptions = {}): UserDto => {
     const { hideDiscriminator } = options;
     const { discordName, battleNetTag, vouchCalculation } = entity;

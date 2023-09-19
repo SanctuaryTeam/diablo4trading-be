@@ -110,7 +110,7 @@ class CustomQueryBuilder {
 
     searchByTitle(title?: string): CustomQueryBuilder {
         if (title) {
-            this.queryBuilder = this.queryBuilder.orWhere(
+            this.queryBuilder = this.queryBuilder.andWhere(
                 'service.title LIKE :title',
                 { title: `%${title}%` },
             );
