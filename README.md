@@ -73,6 +73,31 @@ To run the application, you can use the following scripts:
  yarn start:prod
 ```
 
+## Seeding the Database
+
+Seeding allows you to populate your database with initial data. This can be useful for testing or when you want to ensure a consistent set of data is available across different environments.
+
+```yarn seed```: Builds and then runs the seeder.js file from the dist/src directory. 
+
+
+**Seeding for Development**
+
+Before running the development server, you might want to seed your database with some test data.
+```bash
+    yarn seed
+    yarn start:dev
+```
+
+**Seeding For Tests**
+
+Resetting Data Before Tests: If you have end-to-end tests or integration tests, you might want to ensure a consistent database state before running them. To reset and seed your database:
+
+```bash
+yarn migrate:run
+yarn seed
+yarn test:e2e
+```
+
 ## Testing
 For testing, we have the following scripts:
 
