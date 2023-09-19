@@ -41,13 +41,11 @@ export const fromEntity = (entity: Service, options: FromEntityOptions = {}): Se
         user,
     } = entity;
 
-    const { hideDiscriminator } = options;
-
-    const userDto = user ? userDtoFromEntity(user, { hideDiscriminator }) : undefined;
+    const userDto = user ? userDtoFromEntity(user, {hideDiscriminator: false ? options.hideDiscriminator : true}) : undefined;
     const serviceSlotsDto: ServiceSlotDto[] = [];
 
     Array.isArray(slots)
-        && slots.forEach(slot => serviceSlotsDto.push(serviceSlotDtoFromEntity(slot, { hideDiscriminator })));
+        && slots.forEach(slot => serviceSlotsDto.push(serviceSlotDtoFromEntity(slot, { hideDiscriminator: false ? options.hideDiscriminator : true })));
 
     return {
         id,
