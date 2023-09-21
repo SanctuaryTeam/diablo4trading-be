@@ -20,8 +20,8 @@ import { RequestModel } from 'src/auth/request.model';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { ServiceResponseException } from 'src/common/exceptions';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
-import { UsersService } from '../users/users.service';
-import { fromEntity as serviceSlotDtoFromEntity } from './service-slots/service-slots.dto';
+import { UsersService, USER_ERROR_MESSAGES} from '../users/users.service';
+import { fromEntity as serviceSlotDtoFromEntity, ServiceSlotDto } from './service-slots/service-slots.dto';
 import { ServiceSlotsService } from './service-slots/service-slots.service';
 import { fromEntity as serviceDtoFromEntity } from './service.dto';
 import { Service } from './services.entity';
@@ -161,6 +161,13 @@ export class ServicesController {
 
         if (!existingService) {
             throw new NotFoundException(`Service with ID ${serviceUuid} not found`);
+        }
+
+        // Check if the user with the provided userId exists
+        const user = await this.usersService.findById(userId);
+
+        if (!user) {
+            throw new NotFoundException(USER_ERROR_MESSAGES.USER_NOT_FOUND(userId));
         }
 
         // Creating a new ServiceSlot

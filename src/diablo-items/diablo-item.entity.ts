@@ -95,7 +95,7 @@ export class DiabloItem {
         type: 'blob',
         transformer: {
             to: (value: string) => Buffer.from(value),
-            from: (value: Buffer) => value.toString(),
+            from: (value: Buffer) => value?.toString(),
         },
     })
     image: string;
