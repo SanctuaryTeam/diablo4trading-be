@@ -107,7 +107,7 @@ export class ServiceSlotsService {
                     .andWhere('service_slot.state IN (:...states)', {
                         states: [API.ServiceSlotStates.Pending, API.ServiceSlotStates.Accepted],
                     })
-                .execute();
+                    .execute();
             }
 
             await slotQueryBuilder

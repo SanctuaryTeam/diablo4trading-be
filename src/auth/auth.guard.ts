@@ -1,9 +1,9 @@
 import { ExecutionContext, Injectable, Type } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IAuthGuard, AuthGuard as PassportAuthGuard } from '@nestjs/passport';
+import { AuthGuard as PassportAuthGuard, IAuthGuard } from '@nestjs/passport';
 import { SKIP_GUARDS_KEY } from './skip-guards.decorator';
 
-export const AuthGuard = (type?: string | string[]): Type<IAuthGuard>  => {
+export const AuthGuard = (type?: string | string[]): Type<IAuthGuard> => {
     @Injectable()
     class AuthGuard extends PassportAuthGuard(type) {
         constructor(readonly _reflector: Reflector) {
@@ -18,7 +18,7 @@ export const AuthGuard = (type?: string | string[]): Type<IAuthGuard>  => {
             if (skipGuards) {
                 try {
                     // add the user by invoking the super context
-                    await super.canActivate(context)
+                    await super.canActivate(context);
                 } catch {
                     // do nothing on errors
                 } finally {
