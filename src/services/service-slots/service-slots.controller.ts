@@ -16,8 +16,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { RequestModel } from 'src/auth/request.model';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { OptionalParseIntPipe } from '../../pipes/optional-parse-int-pipe';
-import { fromEntity as serviceSlotDtoFromEntity, ServiceSlotDto } from './service-slots.dto';
-import { ServiceSlot } from './service-slots.entity';
+import { fromEntity as serviceSlotDtoFromEntity } from './service-slots.dto';
 import { SERVICE_SLOT_ERROR_CODES, ServiceSlotsService } from './service-slots.service';
 
 const STATE_TRANSITIONS_MAP = {
@@ -35,17 +34,15 @@ export class ServiceSlotsController {
     @Get('')
     async search(
         @Request() req: RequestModel,
-        @Query('userId', OptionalParseIntPipe) userId?: number,
+        @Query('userId') userUuid?: string,
         @Query('state') state?: API.ServiceSlotStates,
         @Query('excludeEnded') excludeEnded?: boolean,
         @Query('offset', OptionalParseIntPipe) offset?: number,
         @Query('limit', OptionalParseIntPipe) limit?: number,
-    ): Promise<ServiceSlotDto[]> {
-        const reqUserId = req.user?.id;
+    ): Promise<API.ServiceSlotDto[]> {
         let serviceSlotQuery = this.serviceSlotsService.createQuery();
-        if (reqUserId === userId) {
-            serviceSlotQuery = serviceSlotQuery.searchByUser(userId);
-        }
+        const reqUserId = req.user?.uuid;
+        reqUserId === userUuid && serviceSlotQuery.searchByUserUuid(userUuid);
         return await serviceSlotQuery
             .excludeEnded(excludeEnded === true)
             .searchByState(state)
@@ -55,18 +52,22 @@ export class ServiceSlotsController {
             .paginate(offset, limit)
             .orderBy('createdAt', 'DESC')
             .getMany()
-            .then((slots) => slots.map(slot => serviceSlotDtoFromEntity(slot, { hideDiscriminator: true })));
+            .then((slots) =>
+                slots.map(slot =>
+                    serviceSlotDtoFromEntity(slot, { hideDiscriminator: slot.state === API.ServiceSlotStates.Pending })
+                )
+            );
     }
 
     @Put(':id/state/:newState')
     async updateState(
-        @Param('id') id: number,
+        @Param('id') slotUuid: string,
         @Param('newState') newState: API.ServiceSlotStates,
-    ): Promise<ServiceSlotDto> {
-        const slot = await this.serviceSlotsService.findById(id);
+    ): Promise<API.ServiceSlotDto> {
+        const slot = await this.serviceSlotsService.findById(slotUuid);
 
         if (!slot) {
-            throw new NotFoundException(`Service slot with ID ${id} not found`);
+            throw new NotFoundException(`Service slot with ID ${slotUuid} not found`);
         }
 
         if (!STATE_TRANSITIONS_MAP[slot.state]?.includes(newState)) {
@@ -74,7 +75,7 @@ export class ServiceSlotsController {
         }
 
         try {
-            return await this.serviceSlotsService.updateServiceSlotState(id, newState)
+            return await this.serviceSlotsService.updateServiceSlotState(slotUuid, newState)
                 .then((slot) => serviceSlotDtoFromEntity(slot));
         } catch (error) {
             // Check if error is a SERVICE_SLOT_ERROR_CODES

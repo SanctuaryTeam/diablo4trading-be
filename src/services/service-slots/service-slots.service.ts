@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { API } from '@sanctuaryteam/shared';
+import { User } from 'src/users/users.entity';
 import { Brackets, Not, Repository, SelectQueryBuilder } from 'typeorm';
 import { ServiceResponseException } from '../../common/exceptions';
 import { ServiceSlot } from './service-slots.entity';
@@ -26,8 +27,8 @@ export class ServiceSlotsService {
         );
     }
 
-    async findById(id: number): Promise<ServiceSlot> {
-        return this.serviceSlotRepository.findOneBy({ id });
+    async findById(uuid: string): Promise<ServiceSlot> {
+        return this.serviceSlotRepository.findOneBy({ uuid });
     }
 
     async createServiceSlot(data: ServiceSlotCreationData): Promise<ServiceSlot> {
@@ -58,9 +59,8 @@ export class ServiceSlotsService {
         return await this.serviceSlotRepository.save(serviceSlot);
     }
 
-    async updateServiceSlotState(id: number, state: API.ServiceSlotStates): Promise<ServiceSlot> {
+    async updateServiceSlotState(slotUuid: string, state: API.ServiceSlotStates): Promise<ServiceSlot> {
         // Check the validity of the state before proceeding
-
         if (!Object.values(API.ServiceSlotStates).includes(state)) {
             throw new ServiceResponseException(
                 SERVICE_SLOT_ERROR_CODES.INVALID_STATE,
@@ -78,8 +78,7 @@ export class ServiceSlotsService {
 
             const slot = await slotQueryBuilder
                 .leftJoinAndSelect('service_slot.service', 'service')
-                .leftJoinAndSelect('service_slot.client', 'client')
-                .where('service_slot.id = :id', { id })
+                .where('service_slot.uuid = :slotUuid', { slotUuid })
                 .getOne();
 
             if (!slot) {
@@ -88,7 +87,7 @@ export class ServiceSlotsService {
 
             if (state === API.ServiceSlotStates.Accepted) {
                 const acceptedSlotsCount = await slotQueryBuilder
-                    .where('service_slot.service_id = :serviceId', { serviceId: slot.service.id })
+                    .where('service.uuid = :serviceId', { serviceId: slot.service.uuid })
                     .andWhere('service_slot.state = :state', { state: API.ServiceSlotStates.Accepted })
                     .getCount();
 
@@ -104,7 +103,7 @@ export class ServiceSlotsService {
                 await slotQueryBuilder
                     .update()
                     .set({ state: API.ServiceSlotStates.Rejected })
-                    .where('service_slot.client_user_id = :userId', { userId: slot.client.id })
+                    .where('client_user_id = :clientId', { clientId: slot.client.id })
                     .andWhere('service_slot.state IN (:...states)', {
                         states: [API.ServiceSlotStates.Pending, API.ServiceSlotStates.Accepted],
                     })
@@ -114,10 +113,10 @@ export class ServiceSlotsService {
             await slotQueryBuilder
                 .update()
                 .set({ state })
-                .where('service_slot.id = :id', { id })
+                .where('service_slot.uuid = :slotUuid', { slotUuid })
                 .execute();
 
-            return await slotQueryBuilder.where('service_slot.id = :id', { id }).getOne();
+            return await slotQueryBuilder.where('service_slot.uuid = :slotUuid', { slotUuid }).getOne();
         });
     }
 }
@@ -160,14 +159,15 @@ class CustomQueryBuilder {
         return this;
     }
 
-    searchByUser(id: number): CustomQueryBuilder {
-        if (typeof id === 'number') {
-            this.queryBuilder = this.queryBuilder.andWhere(
-                new Brackets(queryBuilder => {
-                    queryBuilder.where('service_slot.service_owner_user_id = :id', { id })
-                        .orWhere('service_slot.client_user_id = :id', { id });
-                }),
-            );
+    searchByUserUuid(userUuid: string): CustomQueryBuilder {
+        if (typeof userUuid === 'string') {
+            this.queryBuilder = this.queryBuilder
+                .where(
+                    new Brackets(queryBuilder => {
+                        queryBuilder.where('client.uuid = :userUuid', { userUuid })
+                            .orWhere('serviceOwner.uuid = :userUuid', { userUuid });
+                    }),
+                );
         }
         return this;
     }

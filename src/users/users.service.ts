@@ -19,7 +19,7 @@ export class UsersService {
     }
 
     async findOrCreateUser(profile: Partial<User>): Promise<User> {
-        const { discordName, discordId, email, battleNetTag } = profile;
+        const { discordName, discordId, email, battleNetTag, uuid } = profile;
 
         // Check if the user already exists based on Discord ID
         let user = await this.userRepository.findOne({ where: { discordId } });
@@ -30,7 +30,8 @@ export class UsersService {
                 discordName,
                 discordId,
                 email,
-                battleNetTag, // Add other relevant properties here
+                battleNetTag,
+                uuid,
             });
 
             await this.userRepository.save(user);

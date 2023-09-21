@@ -1,6 +1,7 @@
 import { ItemListing } from 'src/item-listings/item-listing.entity';
 import { Service } from 'src/services/services.entity';
 import {
+    BeforeInsert,
     Column,
     CreateDateColumn,
     Entity,
@@ -10,6 +11,7 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { PolymorphicParent } from 'typeorm-polymorphic';
+import { v4 as uuid } from 'uuid';
 import { User } from '../users.entity';
 import { UserVouchState } from './user-vouch-state.enum';
 
@@ -17,6 +19,14 @@ import { UserVouchState } from './user-vouch-state.enum';
 export class UserVouch {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @BeforeInsert()
+    generateUuid() {
+        this.uuid = uuid();
+    }
+
+    @Column({ type: 'uuid', nullable: false })
+    uuid: string;
 
     @Column()
     recipientId: number;
@@ -59,9 +69,9 @@ export class UserVouch {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => User)
-    @JoinColumn({ name: 'updated_by' })
-    updatedBy: string;
+    // @ManyToOne(() => User)
+    // @JoinColumn({ name: 'updated_by' })
+    // updatedBy: string;
 
     @Column({ type: 'boolean', default: false })
     deleted: boolean;

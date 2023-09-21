@@ -1,35 +1,18 @@
-import { fromEntity as userDtoFromEntity, UserDto } from '../users/user.dto';
-import { fromEntity as serviceSlotDtoFromEntity, ServiceSlotDto } from './service-slots/service-slots.dto'; // Update this path as needed
+import { API } from '@sanctuaryteam/shared';
+import { fromEntity as userDtoFromEntity } from '../users/user.dto';
+import { fromEntity as serviceSlotDtoFromEntity } from './service-slots/service-slots.dto'; // Update this path as needed
 import { Service } from './services.entity';
-
-export interface ServiceDto {
-    id: number;
-    realmType: string;
-    title: string;
-    content: string;
-    user: UserDto;
-    userId: number;
-    tags: number;
-    maxAcceptedSlots: number;
-    slots: ServiceSlotDto[];
-    bumpedAt: Date;
-    createdAt: Date;
-    updatedAt: Date;
-    updatedBy: string;
-    deleted: boolean;
-}
 
 interface FromEntityOptions {
     hideDiscriminator?: boolean;
 }
 
-export const fromEntity = (entity: Service, options: FromEntityOptions = {}): ServiceDto => {
+export const fromEntity = (entity: Service, options: FromEntityOptions = {}): API.ServiceDto => {
     const {
-        id,
+        uuid,
         realmType,
         title,
         content,
-        userId,
         tags,
         maxAcceptedSlots,
         slots,
@@ -41,18 +24,20 @@ export const fromEntity = (entity: Service, options: FromEntityOptions = {}): Se
         user,
     } = entity;
 
-    const userDto = user ? userDtoFromEntity(user, {hideDiscriminator: false ? options.hideDiscriminator : true}) : undefined;
-    const serviceSlotsDto: ServiceSlotDto[] = [];
+    const { hideDiscriminator } = options;
+
+    const userDto = user ? userDtoFromEntity(user, { hideDiscriminator }) : undefined;
+    const serviceSlotsDto: API.ServiceSlotDto[] = [];
 
     Array.isArray(slots)
         && slots.forEach(slot => serviceSlotsDto.push(serviceSlotDtoFromEntity(slot, { hideDiscriminator: false ? options.hideDiscriminator : true })));
 
     return {
-        id,
+        id: uuid,
         realmType,
         title,
         content,
-        userId,
+        userId: userDto?.id,
         tags,
         maxAcceptedSlots,
         slots: serviceSlotsDto,

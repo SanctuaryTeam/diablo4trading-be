@@ -1,4 +1,5 @@
 import {
+    BeforeInsert,
     Column,
     CreateDateColumn,
     Entity,
@@ -9,6 +10,7 @@ import {
 } from 'typeorm';
 
 import { API } from '@sanctuaryteam/shared';
+import { v4 as uuid } from 'uuid';
 import { User } from '../../users/users.entity';
 import { Service } from '../services.entity';
 
@@ -16,6 +18,14 @@ import { Service } from '../services.entity';
 export class ServiceSlot {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @BeforeInsert()
+    generateUuid() {
+        this.uuid = uuid();
+    }
+
+    @Column({ type: 'uuid', nullable: false })
+    uuid: string;
 
     @Column({
         nullable: false,

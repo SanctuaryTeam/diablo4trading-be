@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/users.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { ServiceResponseException } from '../common/exceptions';
-import { User } from '../users/users.entity';
 import { Service } from './services.entity';
 // Minutes
 const MIN_BUMP_INTERVAL = 30;
@@ -34,17 +34,17 @@ export class ServicesService {
         return await this.serviceRepository.save(service);
     }
 
-    async updateService(id: number, dto: Partial<Service>): Promise<Service> {
-        const existingService = await this.serviceRepository.findOneBy({ id });
+    async updateService(uuid: string, dto: Partial<Service>): Promise<Service> {
+        const existingService = await this.serviceRepository.findOneBy({ uuid });
         if (!existingService) {
             throw new ServiceResponseException(
                 SERVICE_ERROR_CODES.SERVICE_NOT_FOUND,
-                `Service with ID ${id} not found`,
+                `Service with ID ${uuid} not found`,
             );
         }
 
-        await this.serviceRepository.update(id, dto);
-        return await this.serviceRepository.findOneBy({ id });
+        await this.serviceRepository.update(uuid, dto);
+        return await this.serviceRepository.findOneBy({ uuid });
     }
 
     async deleteService(id: number): Promise<void> {
@@ -93,8 +93,8 @@ class CustomQueryBuilder {
         return this;
     }
 
-    searchById(id: number): CustomQueryBuilder {
-        this.queryBuilder = this.queryBuilder.andWhere('service.id = :id', { id });
+    searchByServiceUuid(serviceUuid: string): CustomQueryBuilder {
+        this.queryBuilder = this.queryBuilder.andWhere('service.uuid = :serviceUuid', { serviceUuid });
         return this;
     }
 
@@ -128,12 +128,11 @@ class CustomQueryBuilder {
         return this;
     }
 
-    searchByUserId(userId?: number): CustomQueryBuilder {
-        if (typeof userId === 'number') {
-            this.queryBuilder = this.queryBuilder.andWhere(
-                `service.userId = :userId`,
-                { userId },
-            );
+    searchByUserUuid(userUuid?: string): CustomQueryBuilder {
+        if (typeof userUuid === 'string') {
+            this.queryBuilder = this.queryBuilder
+                .innerJoin('service.user', 'service_user')
+                .andWhere('service_user.uuid = :userUuid', { userUuid });
         }
         return this;
     }
