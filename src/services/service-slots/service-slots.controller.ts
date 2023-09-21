@@ -41,8 +41,7 @@ export class ServiceSlotsController {
     ): Promise<API.ServiceSlotDto[]> {
         const serviceSlotQuery = this.serviceSlotsService.createQuery();
         const reqUserId = req.user?.uuid;
-        if (reqUserId === userUuid ? serviceSlotQuery.searchByUserUuid(userUuid) : null) {
-        }
+        reqUserId === userUuid && serviceSlotQuery.searchByUserUuid(userUuid);
         return await serviceSlotQuery
             .excludeEnded(excludeEnded === true)
             .searchByState(state)
