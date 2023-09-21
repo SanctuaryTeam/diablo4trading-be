@@ -1,24 +1,37 @@
 version: '3'
 
 services:
-  backend-api:
-    # Use the image built from the Dockerfile in the current directory
+  nest:
     image: node:latest
     env_file:
       - .env
-    # Specify the working directory inside the container
     working_dir: /app
-    # Mount the current directory into the container for live code editing
     volumes:
       - .:/app
-    # Expose the development server port (if needed)
     ports:
-        # use the BACKEND_PORT variable from .env or 3000 by default
       - '${BACKEND_PORT:-3000}:${BACKEND_PORT:-3000}'
-    # Install and run the development server using Yarn
     command:
       - sh
       - -c
       - |
         yarn install
         yarn start:dev
+    networks:
+      - app-network
+
+  # mysql:
+  #   image: mysql:5.7
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+  #     MYSQL_DATABASE: diablo4trading
+  #     MYSQL_USER: ${DATABASE_USERNAME}
+  #     MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+  #   ports:
+  #     - "${DATABASE_PORT}:${DATABASE_PORT}"
+  #   volumes:
+  #     - mysql-data:/var/lib/mysql
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   networks:
+  #     - app-network
