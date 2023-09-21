@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { API } from '@sanctuaryteam/shared';
-import { Not, Repository, SelectQueryBuilder } from 'typeorm';
+import { Brackets, Not, Repository, SelectQueryBuilder } from 'typeorm';
 import { ServiceResponseException } from '../../common/exceptions';
 import { ServiceSlot } from './service-slots.entity';
 
@@ -155,6 +155,18 @@ class CustomQueryBuilder {
             this.queryBuilder = this.queryBuilder.andWhere(
                 'service_slot.client_user_id = :id',
                 { id },
+            );
+        }
+        return this;
+    }
+
+    searchByUser(id: number): CustomQueryBuilder {
+        if (typeof id === 'number') {
+            this.queryBuilder = this.queryBuilder.andWhere(
+                new Brackets(queryBuilder => {
+                    queryBuilder.where('service_slot.service_owner_user_id = :id', { id })
+                        .orWhere('service_slot.client_user_id = :id', { id });
+                }),
             );
         }
         return this;

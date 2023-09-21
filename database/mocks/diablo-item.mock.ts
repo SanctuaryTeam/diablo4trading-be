@@ -1,11 +1,12 @@
 // diablo-item.mock.ts
 import { Game } from '@diablosnaps/common';
 import { faker } from '@faker-js/faker';
-import { DiabloItemAffix } from './diablo-item-affix.interface';
-import { IDiabloItem } from './diablo-item.interface';
+import { DiabloItemAffix } from '../../src/diablo-items/diablo-item-affix.interface';
+import { IDiabloItem } from '../../src/diablo-items/diablo-item.interface';
+import { GenerateMock } from './mock.interface';
 
 // Function to generate random IDiabloItem mock data
-export function generateMockDiabloItems(count: number, diabloItemAffixes: DiabloItemAffix[]): IDiabloItem[] {
+export const generateMock: GenerateMock<IDiabloItem> = (count: number, diabloItemAffixes: DiabloItemAffix[]) => {
     const mockItems: IDiabloItem[] = [];
 
     for (let i = 0; i < count; i++) {
@@ -48,4 +49,4 @@ export function generateMockDiabloItems(count: number, diabloItemAffixes: Diablo
     }
 
     return mockItems;
-}
+};
