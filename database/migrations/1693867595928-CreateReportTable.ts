@@ -174,6 +174,7 @@ export class CreateReportTable1693867595928 implements MigrationInterface {
             }),
         )
 
+        // We can add more as the queries are used
         await queryRunner.createIndex(
             'report',
             new TableIndex({

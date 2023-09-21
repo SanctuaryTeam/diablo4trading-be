@@ -15,7 +15,7 @@ import { ReportType } from './report-type/report-type.entity';
 import { Service } from 'src/services/services.entity';
 import { User } from 'src/users/users.entity';
 
-// TODO : ANDREW : Do we move these to 'shared'?
+// TODO : ANDREW : Look at moving this to 'Share' per PR Request
 export enum REPORT_STATES {
     PENDING = 'PENDING',
     REVIEWING = 'REVIEWING',

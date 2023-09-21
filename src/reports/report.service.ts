@@ -5,6 +5,7 @@ import { REPORT_STATES, Report } from './report.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { USER_ERROR_CODES, USER_ERROR_MESSAGES, UsersService } from 'src/users/users.service';
 
+// TODO : ANDREW : Look at moving this to 'Share' per PR Request
 export enum REPORT_ERROR_CODES {
     REPORT_NOT_FOUND = 'REPORT_NOT_FOUND',
     INVALID_STATE = 'INVALID_STATE',
@@ -56,9 +57,9 @@ export class ReportService {
      * let report = new Report(); // Example
      * let reportResult = createReport(report);
      * `
-     * @param report - Report to add to the Database (with required fields)
+     * @param dto - Report to add to the Database (with required fields)
     */
-    async createReport(report: Partial<Report>): Promise<Report> {
+    async createReport(dto: Partial<Report>): Promise<Report> {
 
         try {
             // HACK : Removing the ability to self create the 'id'
@@ -73,9 +74,9 @@ export class ReportService {
             // NEXTVAL: 124 (then 125, 126, 127, etc...)
             // 
             // There might be a better way to do this without causing another query to check the next val
-            if (report?.id) report.id = null;
+            if (dto?.id) dto.id = null;
 
-            const createdReport = this.reportRepository.create(report);
+            const createdReport = this.reportRepository.create(dto);
             return await this.reportRepository.save(createdReport);
         } catch (error) {
 
@@ -246,11 +247,19 @@ export class ReportService {
             ));
         }
 
-        // Currently only checking the 'state' is valid
-        // We may want to add more validation later
+        try {
+            // Currently only checking the 'state' is valid
+            // We may want to add more validation later
 
-        await this.reportRepository.update(id, dto);
-        return await this.reportRepository.findOneBy({ id });
+            await this.reportRepository.update(id, dto);
+            return await this.reportRepository.findOneBy({ id });
+        } catch (error) {
+
+            await this.handleError(new ServiceResponseException(
+                REPORT_ERROR_CODES.SQL_ERROR,
+                error.message,
+            ));
+        }
     }
 
     //#endregion - UPDATE

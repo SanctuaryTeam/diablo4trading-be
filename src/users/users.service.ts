@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
 
+// TODO : ANDREW : Look at moving this to 'Share' per PR Request
 export enum USER_ERROR_CODES {
     USER_NOT_FOUND = 'USER_NOT_FOUND',
 }
