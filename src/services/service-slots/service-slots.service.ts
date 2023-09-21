@@ -87,7 +87,7 @@ export class ServiceSlotsService {
 
             if (state === API.ServiceSlotStates.Accepted) {
                 const acceptedSlotsCount = await slotQueryBuilder
-                    .where('service.uuid = :serviceId', { serviceId: slot.service?.uuid })
+                    .where('service.uuid = :serviceId', { serviceId: slot.service.uuid })
                     .andWhere('service_slot.state = :state', { state: API.ServiceSlotStates.Accepted })
                     .getCount();
 
@@ -103,7 +103,7 @@ export class ServiceSlotsService {
                 await slotQueryBuilder
                     .update()
                     .set({ state: API.ServiceSlotStates.Rejected })
-                    .where('client_user_id = :clientId', { clientId: slot.client?.id })
+                    .where('client_user_id = :clientId', { clientId: slot.client.id })
                     .andWhere('service_slot.state IN (:...states)', {
                         states: [API.ServiceSlotStates.Pending, API.ServiceSlotStates.Accepted],
                     })
