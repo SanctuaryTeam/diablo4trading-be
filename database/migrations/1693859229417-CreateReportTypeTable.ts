@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import { ReportType } from '../../src/reports/report-type/report-type.entity'
 
 export class CreateReportTypeTable1693859229417 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
@@ -24,6 +25,21 @@ export class CreateReportTypeTable1693859229417 implements MigrationInterface {
             }),
             true,
         );
+
+        const reportTypeRepository = queryRunner.connection.getRepository(ReportType);
+        const reportTypes = reportTypeRepository.create([
+            {
+                typeDescription: 'User',
+            },
+            {
+                typeDescription: 'Service',
+            },
+            {
+                typeDescription: 'Item',
+            },
+        ]);
+
+        await reportTypeRepository.save(reportTypes);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

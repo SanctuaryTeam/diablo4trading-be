@@ -1,3 +1,5 @@
+import { ReportReason } from 'src/reports/report-reason/report-reason.entity';
+import { ReportType } from 'src/reports/report-type/report-type.entity';
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
 export class CreateReportReasonTable1693862005659 implements MigrationInterface {
@@ -39,6 +41,40 @@ export class CreateReportReasonTable1693862005659 implements MigrationInterface 
                 onDelete: 'CASCADE',
             }),
         )
+
+        const reportTypeRepository = queryRunner.connection.getRepository(ReportType);
+        const userTypeId = (await reportTypeRepository.findOne({ where: { typeDescription: 'User' } })).id;
+        const serviceTypeId = (await reportTypeRepository.findOne({ where: { typeDescription: 'Service' } })).id;
+        const itemTypeId = (await reportTypeRepository.findOne({ where: { typeDescription: 'Item' } })).id;
+
+        const reportTypeIds: Array<number> = [userTypeId, serviceTypeId, itemTypeId];
+
+        const reportReasonDescriptions: Array<string> = [
+            'Exploits',
+            'Real Money Trading (RMT)',
+            'Edited Bids',
+            'Unethical Trades',
+            'Abuse/Harrassment',
+            'Vouch Abuse',
+        ];
+
+        const reportReasons = new Array<Partial<ReportReason>>;
+
+        reportTypeIds.forEach(typeId => {
+            reportReasonDescriptions.forEach(reasonDescription => {
+                const temp: Partial<ReportReason> = {
+                    reportTypeId: typeId,
+                    reasonDescription: reasonDescription,
+                };
+
+                reportReasons.push(temp);
+            })
+        });
+
+        const reportReasonRepository = queryRunner.connection.getRepository(ReportReason);
+        const reportTypes = reportReasonRepository.create(reportReasons);
+
+        await reportReasonRepository.save(reportTypes);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
