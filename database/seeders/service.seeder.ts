@@ -13,7 +13,13 @@ export class ServiceSeeder implements Seeder {
     ) {}
 
     async seed(count: number): Promise<void> {
-        const selectedColumns = ['user.id', 'user.discord_id', 'user.discord_name', 'user.battle_net_tag', 'user.email'];
+        const selectedColumns = [
+            'user.id',
+            'user.discord_id',
+            'user.discord_name',
+            'user.battle_net_tag',
+            'user.email',
+        ];
 
         const query = this.userRepository.createQueryBuilder('user')
             .select(selectedColumns)
