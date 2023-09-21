@@ -18,7 +18,6 @@ import { API } from '@sanctuaryteam/shared';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { RequestModel } from 'src/auth/request.model';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
-import { ServiceResponseException } from 'src/common/exceptions';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
 import { UsersService } from '../users/users.service';
 import { fromEntity as serviceSlotDtoFromEntity } from './service-slots/service-slots.dto';
@@ -102,12 +101,10 @@ export class ServicesController {
                 serviceDtoFromEntity(service, { hideDiscriminator: true })
             );
         } catch (error) {
-            if (error instanceof ServiceResponseException) {
-                throw new HttpException(
-                    error?.message || 'Unknown error',
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                );
-            }
+            throw new HttpException(
+                error?.message || 'Unknown error',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -131,17 +128,15 @@ export class ServicesController {
         try {
             await this.servicesService.bumpService(id);
         } catch (error) {
-            if (error instanceof ServiceResponseException) {
-                if (error.code === SERVICE_ERROR_CODES.BUMP_TOO_SOON) {
-                    throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-                } else if (error.code === SERVICE_ERROR_CODES.SERVICE_NOT_FOUND) {
-                    throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-                } else {
-                    throw new HttpException(
-                        'Unknown error',
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                    );
-                }
+            if (error?.code === SERVICE_ERROR_CODES.BUMP_TOO_SOON) {
+                throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+            } else if (error?.code === SERVICE_ERROR_CODES.SERVICE_NOT_FOUND) {
+                throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+            } else {
+                throw new HttpException(
+                    'Unknown error',
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                );
             }
         }
     }

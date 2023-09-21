@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { API } from '@sanctuaryteam/shared';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
-import { ServiceResponseException } from 'src/common/exceptions';
 import { IDiabloItem } from 'src/diablo-items/diablo-item.interface';
 import { DiabloItemService } from 'src/diablo-items/diablo-item.service';
 import { generateMock as generateMockDiabloItems } from '../../database/mocks/diablo-item.mock';
@@ -130,13 +129,11 @@ export class ItemListingsController implements OnModuleInit {
         try {
             return await this.itemListingBidsService.createBid(body);
         } catch (error) {
-            if (error instanceof ServiceResponseException) {
-                if (error?.code in BID_ERROR_CODES) {
-                    throw new BadRequestException({
-                        errorCode: error.code,
-                        message: error.message,
-                    });
-                }
+            if (error?.code in BID_ERROR_CODES) {
+                throw new BadRequestException({
+                    errorCode: error.code,
+                    message: error.message,
+                });
             }
 
             throw new InternalServerErrorException('An unexpected error occurred');
