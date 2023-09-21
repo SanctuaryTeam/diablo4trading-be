@@ -32,7 +32,7 @@ export const fromEntity = (entity: Service, options: FromEntityOptions = {}): AP
     Array.isArray(slots)
         && slots.forEach(slot =>
             serviceSlotsDto.push(
-                serviceSlotDtoFromEntity(slot, { hideDiscriminator: false ? options.hideDiscriminator : true }),
+                serviceSlotDtoFromEntity(slot, { hideDiscriminator }),
             )
         );
 
