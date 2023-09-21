@@ -112,24 +112,24 @@ export class ServicesController {
     }
 
     @Delete(':id/delete')
-    async delete(@Param('id') id: number): Promise<void> {
-        await this.servicesService.deleteService(id);
+    async delete(@Param('id') serviceUuid: string): Promise<void> {
+        await this.servicesService.deleteService(serviceUuid);
     }
 
     @Delete(':id/soft-delete')
-    async softDelete(@Param('id') id: number): Promise<void> {
-        await this.servicesService.softDeleteService(id);
+    async softDelete(@Param('id') serviceUuid: string): Promise<void> {
+        await this.servicesService.softDeleteService(serviceUuid);
     }
 
     @Put(':id/undo-soft-delete')
-    async undoSoftDelete(@Param('id') id: number): Promise<void> {
-        await this.servicesService.undoSoftDeleteService(id);
+    async undoSoftDelete(@Param('id') serviceUuid: string): Promise<void> {
+        await this.servicesService.undoSoftDeleteService(serviceUuid);
     }
 
     @Post(':id/bump')
-    async bumpService(@Param('id') id: number): Promise<void> {
+    async bumpService(@Param('id') serviceUuid: string): Promise<void> {
         try {
-            await this.servicesService.bumpService(id);
+            await this.servicesService.bumpService(serviceUuid);
         } catch (error) {
             if (error instanceof ServiceResponseException) {
                 if (error.code === SERVICE_ERROR_CODES.BUMP_TOO_SOON) {

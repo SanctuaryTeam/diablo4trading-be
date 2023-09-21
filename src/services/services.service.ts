@@ -47,24 +47,24 @@ export class ServicesService {
         return await this.serviceRepository.findOneBy({ uuid });
     }
 
-    async deleteService(id: number): Promise<void> {
-        await this.serviceRepository.delete(id);
+    async deleteService(uuid: string): Promise<void> {
+        await this.serviceRepository.delete(uuid);
     }
 
-    async softDeleteService(id: number): Promise<void> {
-        await this.serviceRepository.update(id, { deleted: true });
+    async softDeleteService(uuid: string): Promise<void> {
+        await this.serviceRepository.update(uuid, { deleted: true });
     }
 
-    async undoSoftDeleteService(id: number): Promise<void> {
-        await this.serviceRepository.update(id, { deleted: false });
+    async undoSoftDeleteService(uuid: string): Promise<void> {
+        await this.serviceRepository.update(uuid, { deleted: false });
     }
 
-    async bumpService(id: number): Promise<void> {
-        const service = await this.serviceRepository.findOne({ where: { id } });
+    async bumpService(uuid: string): Promise<void> {
+        const service = await this.serviceRepository.findOne({ where: { uuid } });
         if (!service) {
             throw new ServiceResponseException(
                 SERVICE_ERROR_CODES.SERVICE_NOT_FOUND,
-                `Service with ID ${id} not found`,
+                `Service with ID ${uuid} not found`,
             );
         }
 
@@ -76,7 +76,7 @@ export class ServicesService {
             );
         }
 
-        await this.serviceRepository.update(id, { bumpedAt: new Date() });
+        await this.serviceRepository.update(uuid, { bumpedAt: new Date() });
     }
 }
 

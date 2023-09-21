@@ -10,10 +10,10 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
+import { Game } from '@diablosnaps/common';
 import { v4 as uuid } from 'uuid';
 import { User } from '../users/users.entity';
 import { ServiceSlot } from './service-slots/service-slots.entity';
-import { Game } from '@diablosnaps/common';
 
 @Entity({ name: 'service' })
 export class Service {
