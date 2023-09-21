@@ -18,6 +18,7 @@ export const generateMock: GenerateMock<ServiceSlot> = (count: number, services:
         }
 
         const serviceSlot: Partial<ServiceSlot> = {
+            uuid: faker.string.uuid(),
             serviceId: selectedService.id,
             serviceOwnerUserId: selectedService.userId,
             clientUserId: randomUser.id,

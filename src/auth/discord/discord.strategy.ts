@@ -5,7 +5,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-discord';
 import { User } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
-import { inspect } from 'util';
+import { v4 as uuid } from 'uuid';
 import { RequestModel } from '../request.model';
 
 @Injectable()
@@ -58,6 +58,7 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
             discordId: profile.id,
             email: profile.email,
             battleNetTag,
+            uuid: uuid(),
             // Add other relevant properties you want to store or use for your application.
         };
 

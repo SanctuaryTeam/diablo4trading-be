@@ -1,8 +1,8 @@
 // auth.controller.ts
-import { Controller, Get, Request, Response, UseGuards } from '@nestjs/common';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { fromEntity as userDtoFromEntity } from './../users/user.dto';
 import { DiscordAuthGuard } from './discord/discord.guard';
-import { JwtAuthGuard } from './jwt/jwt.guard';
 import { RequestModel } from './request.model';
 
 @Controller('auth')
@@ -23,6 +23,6 @@ export class AuthController {
     @Get('discord/callback')
     @UseGuards(DiscordAuthGuard)
     async callback(@Request() req: RequestModel) {
-        return { user: req.user, token: req.token };
+        return { user: userDtoFromEntity(req.user), token: req.token };
     }
 }

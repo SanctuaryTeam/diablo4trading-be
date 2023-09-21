@@ -23,7 +23,9 @@ export class UserVouchService {
     async getOpenVouches(user: User): Promise<UserVouch[]> {
         return await this.userVouchRepository.find({
             where: {
-                author: user,
+                author: {
+                    id: user.id,
+                },
                 state: UserVouchState.Open,
             },
         });

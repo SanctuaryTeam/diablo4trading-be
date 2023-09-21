@@ -15,6 +15,7 @@ export const generateMock: GenerateMock<Service> = (count: number, users: User[]
 
     for (let i = 0; i < count; i++) {
         const service: Partial<Service> = {
+            uuid: faker.string.uuid(),
             realmType: faker.helpers.arrayElement(Object.values(Game.ServerType)),
             title: faker.commerce.productName(),
             content: faker.commerce.productDescription(),

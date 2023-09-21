@@ -927,10 +927,10 @@
     consola "^2.15.0"
     node-fetch "^2.6.1"
 
-"@sanctuaryteam/shared@^0.2.5":
-  version "0.2.5"
-  resolved "https://npm.pkg.github.com/download/@sanctuaryteam/shared/0.2.5/d7c372407345ac24f732a12e445da0f7c4e5b9a2#d7c372407345ac24f732a12e445da0f7c4e5b9a2"
-  integrity sha512-85HToPg3duxrAJoSQe4I390Wp37l2YGoNgGfyS7OAx+fE8ytP+LQAe3igtoHmJ78NDE7LnE5dXcJRnUiG9rLTA==
+"@sanctuaryteam/shared@^0.2.10":
+  version "0.2.10"
+  resolved "https://npm.pkg.github.com/download/@sanctuaryteam/shared/0.2.10/f24a473e9a1394843ce948cc63fd1d50ecb933fe#f24a473e9a1394843ce948cc63fd1d50ecb933fe"
+  integrity sha512-EVNafRcvVfz56aIF9F41bPK/uRHhFMporkCpMj2UK3SEvhNpsh3q9eMWK0mFCt+BJ62FuVg8ZGIjNpINp3uZHA==
   dependencies:
     "@diablosnaps/common" "^0.2.5"
     lz-string "^1.5.0"

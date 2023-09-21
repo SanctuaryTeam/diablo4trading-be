@@ -9,6 +9,7 @@ export const generateMock: GenerateMock<User> = (count: number) => {
 
     for (let i = 0; i < count; i++) {
         const user: Partial<User> = {
+            uuid: faker.string.uuid(),
             discordId: '1' + faker.string.numeric(12),
             discordName: faker.internet.userName() + '#' + faker.number.int({ min: 1000, max: 9999 }),
             battleNetTag: faker.internet.userName() + '#' + faker.number.int({ min: 1000, max: 9999 }),

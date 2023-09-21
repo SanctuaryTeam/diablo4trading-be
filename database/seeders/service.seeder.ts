@@ -13,9 +13,21 @@ export class ServiceSeeder implements Seeder {
     ) {}
 
     async seed(count: number): Promise<void> {
-        const users = await this.userRepository.createQueryBuilder('user')
-            .leftJoinAndSelect('user.services', 'service')
-            .groupBy('user.id')
+        const selectedColumns = [
+            'user.id',
+            'user.discord_id',
+            'user.discord_name',
+            'user.battle_net_tag',
+            'user.email',
+        ];
+
+        const query = this.userRepository.createQueryBuilder('user')
+            .select(selectedColumns)
+            .leftJoin('user.services', 'service');
+
+        selectedColumns.forEach(column => query.addGroupBy(column));
+
+        const users = await query
             .having('COUNT(service.id) < 4')
             .getMany();
 

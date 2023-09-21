@@ -39,6 +39,12 @@ For development, the application uses SQLite as the database.
  yarn migrate
 ```
 
+#### Create Migration:
+**migration:create** - Create migration using TypeORM
+```bash
+ yarn migrate:create ./database/migrations/ChangeToSubject
+```
+
 #### Run Migrations:
 **migrate:run** - Run migrations using TypeORM
 ```bash
@@ -84,7 +90,7 @@ Seeding allows you to populate your database with initial data. This can be usef
 
 Before running the development server, you might want to seed your database with some test data.
 ```bash
- yarn seed -seeder UserSeeder,ServiceSeeder,ServiceSlotSeeder
+ yarn seed --seeder=UserSeeder,ServiceSeeder,ServiceSlotSeeder
  yarn start:dev
 ```
 
@@ -96,7 +102,7 @@ Resetting Data Before Tests: If you have end-to-end tests or integration tests, 
 
 ```bash
  yarn migrate:run
- yarn seed -seeder UserSeeder,ServiceSeeder,ServiceSlotSeeder
+ yarn seed --seeder=UserSeeder,ServiceSeeder,ServiceSlotSeeder
  yarn test:e2e
 ```
 
