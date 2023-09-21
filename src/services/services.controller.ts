@@ -19,7 +19,7 @@ import { RequestModel } from 'src/auth/request.model';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
 import { OptionalParseIntPipe } from '../pipes/optional-parse-int-pipe';
 import { USER_ERROR_MESSAGES, UsersService } from '../users/users.service';
-import { ServiceSlot } from './service-slots/service-slots.entity';
+import { fromEntity as serviceSlotDtoFromEntity, ServiceSlotDto } from './service-slots/service-slots.dto';
 import { ServiceSlotsService } from './service-slots/service-slots.service';
 import { fromEntity as serviceDtoFromEntity, ServiceDto } from './service.dto';
 import { Service } from './services.entity';
