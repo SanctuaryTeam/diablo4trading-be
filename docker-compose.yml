@@ -17,4 +17,3 @@ services:
         yarn install
         yarn start:dev
     networks:
-      - app-network
