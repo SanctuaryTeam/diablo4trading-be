@@ -13,6 +13,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { User } from '../users/users.entity';
 import { ServiceSlot } from './service-slots/service-slots.entity';
+import { Game } from '@diablosnaps/common';
 
 @Entity({ name: 'service' })
 export class Service {
@@ -30,7 +31,7 @@ export class Service {
     @Column({
         nullable: false,
     })
-    realmType: string;
+    realmType: Game.ServerType;
 
     @Column({ type: 'varchar', length: 100, nullable: false })
     title: string;

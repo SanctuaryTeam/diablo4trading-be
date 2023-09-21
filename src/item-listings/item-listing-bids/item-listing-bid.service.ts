@@ -46,12 +46,14 @@ export class ItemListingBidsService {
             try {
                 return await this.createBidTransaction(data);
             } catch (error) {
-                if (typeof error?.message === 'string' && error.message.toLowerCase().includes('deadlock')) {
-                    retries++;
-                    await new Promise(res => setTimeout(res, Math.random() * 200));
-                } else {
-                    this.logger.error(error);
-                    throw error;
+                if (error instanceof ServiceResponseException) {
+                    if (typeof error.message === 'string' && error.message.toLowerCase().includes('deadlock')) {
+                        retries++;
+                        await new Promise(res => setTimeout(res, Math.random() * 200));
+                    } else {
+                        this.logger.error(error);
+                        throw error;
+                    }
                 }
             }
         }

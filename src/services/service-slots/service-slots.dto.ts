@@ -26,7 +26,7 @@ export const fromEntity = (entity: ServiceSlot, options: FromEntityOptions = {})
     return {
         id: uuid,
         state,
-        updatedAt,
+        updatedAt: updatedAt.toISOString(),
         client: clientDto,
         clientUserId: clientDto?.id,
         serviceOwner: serviceOwnerDto,

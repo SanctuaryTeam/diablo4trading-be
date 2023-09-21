@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { API } from '@sanctuaryteam/shared';
+import { ServiceResponseException } from 'src/common/exceptions';
 import { Repository } from 'typeorm';
 import { ServiceSlot } from './service-slots.entity';
 
@@ -56,7 +57,9 @@ export class ServiceSlotsCronService {
                 this.logger.debug(`Successfully updated ${outdatedServiceSlots.length} outdated service slots.`);
             });
         } catch (error) {
-            this.logger.error('Error updating outdated service slots', error.stack);
+            if (error instanceof ServiceResponseException) {
+                this.logger.error('Error updating outdated service slots', error.stack);
+            }
         }
     }
 }

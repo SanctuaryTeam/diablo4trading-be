@@ -15,6 +15,7 @@ import { API } from '@sanctuaryteam/shared';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { RequestModel } from 'src/auth/request.model';
 import { SkipGuards } from 'src/auth/skip-guards.decorator';
+import { ServiceResponseException } from 'src/common/exceptions';
 import { OptionalParseIntPipe } from '../../pipes/optional-parse-int-pipe';
 import { fromEntity as serviceSlotDtoFromEntity } from './service-slots.dto';
 import { SERVICE_SLOT_ERROR_CODES, ServiceSlotsService } from './service-slots.service';
@@ -78,14 +79,16 @@ export class ServiceSlotsController {
             return await this.serviceSlotsService.updateServiceSlotState(slotUuid, newState)
                 .then((slot) => serviceSlotDtoFromEntity(slot));
         } catch (error) {
-            // Check if error is a SERVICE_SLOT_ERROR_CODES
-            if (error?.code && error.code in SERVICE_SLOT_ERROR_CODES) {
-                throw new BadRequestException(error.message);
+            if (error instanceof ServiceResponseException) {
+                // Check if error is a SERVICE_SLOT_ERROR_CODES
+                if (error?.code && error.code in SERVICE_SLOT_ERROR_CODES) {
+                    throw new BadRequestException(error.message);
+                }
+                throw new HttpException(
+                    error?.message || 'Unknown error',
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                );
             }
-            throw new HttpException(
-                error?.message || 'Unknown error',
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
         }
     }
 }
