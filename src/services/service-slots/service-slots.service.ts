@@ -61,8 +61,6 @@ export class ServiceSlotsService {
 
     async updateServiceSlotState(slotUuid: string, state: API.ServiceSlotStates): Promise<ServiceSlot> {
         // Check the validity of the state before proceeding
-        console.log(slotUuid);
-
         if (!Object.values(API.ServiceSlotStates).includes(state)) {
             throw new ServiceResponseException(
                 SERVICE_SLOT_ERROR_CODES.INVALID_STATE,
@@ -102,15 +100,14 @@ export class ServiceSlotsService {
 
                 // Update all the CLIENT's slots to REJECTED if they have state PENDING or ACCEPTED
                 // TODO - business logic might be questionable here
-                const temp = slotQueryBuilder
+                await slotQueryBuilder
                     .update()
                     .set({ state: API.ServiceSlotStates.Rejected })
-                    .where('client_user_id = :clientId', { clientId: slot.client.id })
+                    .where('client_user_id = :clientId', { clientId: slot.client?.id })
                     .andWhere('service_slot.state IN (:...states)', {
                         states: [API.ServiceSlotStates.Pending, API.ServiceSlotStates.Accepted],
-                    });
-                console.log(temp.getSql());
-                await temp.execute();
+                    })
+                .execute();
             }
 
             await slotQueryBuilder
@@ -165,12 +162,10 @@ class CustomQueryBuilder {
     searchByUserUuid(userUuid: string): CustomQueryBuilder {
         if (typeof userUuid === 'string') {
             this.queryBuilder = this.queryBuilder
-                .leftJoinAndSelect('service_slot.client', 'slot_client')
-                .leftJoinAndSelect('service_slot.service_owner', 'slot_service_owner')
-                .andWhere(
+                .where(
                     new Brackets(queryBuilder => {
-                        queryBuilder.where('slot_client.uuid = :userUuid', { userUuid })
-                            .orWhere('slot_service_owner.uuid = :userUuid', { userUuid });
+                        queryBuilder.where('client.uuid = :userUuid', { userUuid })
+                            .orWhere('serviceOwner.uuid = :userUuid', { userUuid });
                     }),
                 );
         }
