@@ -93,6 +93,11 @@ class CustomQueryBuilder {
         return this;
     }
 
+    searchById(id: number): CustomQueryBuilder {
+        this.queryBuilder = this.queryBuilder.andWhere('service.id = :id', { id });
+        return this;
+    }
+
     searchByServiceUuid(serviceUuid: string): CustomQueryBuilder {
         this.queryBuilder = this.queryBuilder.andWhere('service.uuid = :serviceUuid', { serviceUuid });
         return this;

@@ -34,9 +34,11 @@ export class UserVouchService {
     private async referenceExists(referenceType: 'ItemListing' | 'Service', referenceId: number): Promise<boolean> {
         switch (referenceType) {
             case 'ItemListing':
-                return this.itemListingRepository.exist({ where: { id: referenceId } });
+                return await this.itemListingRepository.exist({
+                    where: { id: referenceId },
+                });
             case 'Service':
-                return this.serviceRepository.exist({
+                return await this.serviceRepository.exist({
                     where: { id: referenceId },
                 });
             default:
@@ -47,22 +49,29 @@ export class UserVouchService {
     async createVouch(
         referenceType: 'ItemListing' | 'Service',
         referenceId: number,
-        recipient: User,
-        author: User,
+        recipientId: number,
+        authorId: number,
     ): Promise<UserVouch> {
         if (!await this.referenceExists(referenceType, referenceId)) {
             throw new NotFoundException(`The reference ${referenceType} with ID ${referenceId} does not exist`);
         }
+        let userVouch: UserVouch;
+        try {
+            userVouch = this.userVouchRepository.create({
+                referenceType,
+                referenceId,
+                recipientId,
+                authorId,
+                isPositive: true,
+                rating: 5,
+                state: UserVouchState.Open,
+                description: '',
+            });
+        } catch (error) {
+            console.log('Error: ' + error);
+        }
 
-        const userVouch = this.userVouchRepository.create({
-            referenceType,
-            referenceId,
-            recipient,
-            author,
-            state: UserVouchState.Open,
-        });
-
-        return this.userVouchRepository.save(userVouch);
+        return await this.userVouchRepository.save(userVouch);
     }
 
     async updateUserVouchCalculations(updatedVouch: UserVouch): Promise<void> {
@@ -107,7 +116,7 @@ export class UserVouchService {
             throw new BadRequestException('Rating should be between 0 and 10');
         }
 
-        const existingVouch = await this.userVouchRepository.findOne({ where: { id: data.id } });
+        const existingVouch = await this.userVouchRepository.findOne({ where: { uuid: data.id } });
 
         if (!existingVouch) {
             throw new NotFoundException('User Vouch not found');

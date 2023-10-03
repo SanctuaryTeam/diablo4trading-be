@@ -46,6 +46,7 @@ export class ServiceSlotsController {
         reqUserId === userUuid && serviceSlotQuery.searchByUserUuid(userUuid);
         return await serviceSlotQuery
             .excludeEnded(excludeEnded === true)
+            .excludeRejected(excludeEnded === true)
             .searchByState(state)
             .includeService()
             .includeClient()

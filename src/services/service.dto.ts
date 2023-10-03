@@ -1,4 +1,3 @@
-import { Game } from '@diablosnaps/common';
 import { API } from '@sanctuaryteam/shared';
 import { fromEntity as userDtoFromEntity } from '../users/user.dto';
 import { fromEntity as serviceSlotDtoFromEntity } from './service-slots/service-slots.dto'; // Update this path as needed
@@ -42,7 +41,7 @@ export const fromEntity = (entity: Service, options: FromEntityOptions = {}): AP
         realmType,
         title,
         content,
-        userId: userDto?.id,
+        userId: userDto ? userDto.id : user?.uuid,
         tags,
         maxAcceptedSlots,
         slots: serviceSlotsDto,

@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { API } from '@sanctuaryteam/shared';
-import { User } from 'src/users/users.entity';
+import { UserVouchService } from 'src/users/user-vouch/user-vouch.service';
 import { Brackets, Not, Repository, SelectQueryBuilder } from 'typeorm';
 import { ServiceResponseException } from '../../common/exceptions';
 import { ServiceSlot } from './service-slots.entity';
@@ -18,6 +18,7 @@ export type ServiceSlotCreationData = Pick<ServiceSlot, 'serviceOwnerUserId' | '
 export class ServiceSlotsService {
     constructor(
         @InjectRepository(ServiceSlot) private readonly serviceSlotRepository: Repository<ServiceSlot>,
+        private readonly userVouchService: UserVouchService,
     ) {
     }
 
@@ -77,7 +78,6 @@ export class ServiceSlotsService {
             const slotQueryBuilder = transactionalEntityManager.createQueryBuilder(ServiceSlot, 'service_slot');
 
             const slot = await slotQueryBuilder
-                .leftJoinAndSelect('service_slot.service', 'service')
                 .where('service_slot.uuid = :slotUuid', { slotUuid })
                 .getOne();
 
@@ -85,8 +85,25 @@ export class ServiceSlotsService {
                 throw new ServiceResponseException(SERVICE_SLOT_ERROR_CODES.SLOT_NOT_FOUND, 'Slot not found');
             }
 
+            if (state === API.ServiceSlotStates.Ended) {
+                await this.userVouchService.createVouch(
+                    'Service',
+                    slot.serviceId,
+                    slot.clientUserId,
+                    slot.serviceOwnerUserId,
+                );
+                await this.userVouchService.createVouch(
+                    'Service',
+                    slot.serviceId,
+                    slot.serviceOwnerUserId,
+                    slot.clientUserId,
+                );
+                await slotQueryBuilder.execute();
+            }
+
             if (state === API.ServiceSlotStates.Accepted) {
                 const acceptedSlotsCount = await slotQueryBuilder
+                    .leftJoinAndSelect('service_slot.service', 'service')
                     .where('service.uuid = :serviceId', { serviceId: slot.service.uuid })
                     .andWhere('service_slot.state = :state', { state: API.ServiceSlotStates.Accepted })
                     .getCount();
@@ -97,13 +114,12 @@ export class ServiceSlotsService {
                         'Maximum number of accepted slots exceeded',
                     );
                 }
-
                 // Update all the CLIENT's slots to REJECTED if they have state PENDING or ACCEPTED
                 // TODO - business logic might be questionable here
                 await slotQueryBuilder
                     .update()
                     .set({ state: API.ServiceSlotStates.Rejected })
-                    .where('client_user_id = :clientId', { clientId: slot.client.id })
+                    .where('service_slot.client_user_id = :clientId', { clientId: slot.clientUserId })
                     .andWhere('service_slot.state IN (:...states)', {
                         states: [API.ServiceSlotStates.Pending, API.ServiceSlotStates.Accepted],
                     })
@@ -133,6 +149,17 @@ class CustomQueryBuilder {
             this.queryBuilder = this.queryBuilder.andWhere(
                 'service_slot.state != :excludedState',
                 { excludedState: API.ServiceSlotStates.Ended },
+            );
+        }
+
+        return this;
+    }
+
+    excludeRejected(exclude: boolean): CustomQueryBuilder {
+        if (exclude) {
+            this.queryBuilder = this.queryBuilder.andWhere(
+                'service_slot.state != :excludedState',
+                { excludedState: API.ServiceSlotStates.Rejected },
             );
         }
 

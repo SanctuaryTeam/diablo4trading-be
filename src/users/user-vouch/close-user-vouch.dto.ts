@@ -1,8 +1,8 @@
 import { IsBoolean, IsInt, IsString, Max, Min } from 'class-validator';
 
 export class CloseUserVouchDto {
-    @IsInt()
-    id: number;
+    @IsString()
+    id: string;
 
     @IsInt()
     @Min(0)
